@@ -1,7 +1,9 @@
 package dev.xavierc.pictural.api.repository
 
+import dev.xavierc.pictural.api.models.Friend
 import dev.xavierc.pictural.api.models.User
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.lang.Exception
 import java.util.*
@@ -14,8 +16,8 @@ object Users : Table() {
 }
 
 object Friends : Table() {
-    val userUuid = varchar("userUuid", 128) references Users.uuid
-    val friendUuid = varchar("friendUuid", 128) references Users.uuid
+    val userUuid: Column<String> = varchar("userUuid", 128) references Users.uuid
+    val friendUuid: Column<String> = varchar("friendUuid", 128) references Users.uuid
 }
 
 class UserRepository {
@@ -41,15 +43,15 @@ class UserRepository {
     fun updateUserInfo(uuid: String, name: String?, darkModeEnabled: Boolean?, pictureUuid: UUID?) {
         transaction {
             Users.update(where = { Users.uuid eq uuid }, limit = 1) {
-                if(name != null) {
+                if (name != null) {
                     it[Users.name] = name
                 }
 
-                if(darkModeEnabled != null) {
+                if (darkModeEnabled != null) {
                     it[Users.darkModeEnabled] = darkModeEnabled
                 }
 
-                if(pictureUuid != null) {
+                if (pictureUuid != null) {
                     it[Users.pictureUuid] = pictureUuid
                 }
             }
@@ -65,12 +67,27 @@ class UserRepository {
                 it[Users.uuid] = uuid
                 it[Users.name] = name
 
-                if(pictureUuid != null) {
+                if (pictureUuid != null) {
                     it[Users.pictureUuid] = pictureUuid
                 }
             }
         }
     }
 
+    /**
+     * Return the list of friends for [userUuid]
+     */
+    fun getFriendsList(userUuid: String): List<Friend> {
+        val friendList: MutableList<Friend> = mutableListOf()
 
+        transaction {
+            Friends.join(Users, JoinType.LEFT, additionalConstraint = { Friends.friendUuid eq Users.uuid })
+                .slice(Friends.friendUuid, Users.name, Users.pictureUuid)
+                .select { Friends.userUuid eq userUuid }.forEach {
+                    friendList.add(Friend(it[Friends.friendUuid], it[Users.name], it[Users.pictureUuid]))
+                }
+        }
+
+        return friendList.toList()
+    }
 }

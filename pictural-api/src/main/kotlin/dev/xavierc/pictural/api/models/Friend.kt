@@ -20,10 +20,10 @@ package dev.xavierc.pictural.api.models
  */
 data class Friend (
     /* UUID of the friend */
-    val uuid: java.util.UUID,
+    val uuid: kotlin.String,
     /* Name of the user */
     val name: kotlin.String,
     /* Url of the profile picture of the friend */
-    val pictureUuid: kotlin.String? = null
+    val pictureUuid: java.util.UUID? = null
 ) 
 

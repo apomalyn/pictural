@@ -17,17 +17,14 @@ import io.ktor.application.call
 import io.ktor.auth.authentication
 import io.ktor.auth.authenticate
 import io.ktor.auth.OAuthAccessTokenResponse
-import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
-import io.ktor.response.respondText
 import io.ktor.routing.Route
 import io.ktor.routing.post
 import io.ktor.routing.put
 import io.ktor.routing.route
 
 import dev.xavierc.pictural.api.Paths
-import dev.xavierc.pictural.api.models.User
 import dev.xavierc.pictural.api.models.UserPutRequest
 import dev.xavierc.pictural.api.models.UserUpdateRequest
 import dev.xavierc.pictural.api.repository.UserRepository
@@ -59,43 +56,26 @@ fun Route.UserApi() {
 
 
     get { _: Paths.UserFriendsGet ->
-        val principal = call.authentication.principal<OAuthAccessTokenResponse>()
+        val userUuid: String? = call.sessions.get("userUuid") as String?
 
-        if (principal == null) {
+        if (userUuid == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
-            val exampleContentType = "application/json"
-            val exampleContentString = """{
-              "friends" : [ {
-                "pictureUuid" : "pictureUuid",
-                "name" : "Xavier Chrétien",
-                "uuid" : "046b6c7f-0b8a-43b9-b35d-6489e6daee91"
-              }, {
-                "pictureUuid" : "pictureUuid",
-                "name" : "Xavier Chrétien",
-                "uuid" : "046b6c7f-0b8a-43b9-b35d-6489e6daee91"
-              } ]
-            }"""
+            val friendsList = userRepository.getFriendsList(userUuid)
 
-            when (exampleContentType) {
-                "application/json" -> call.respond(gson.fromJson(exampleContentString, empty::class.java))
-                "application/xml" -> call.respondText(exampleContentString, ContentType.Text.Xml)
-                else -> call.respondText(exampleContentString)
-            }
+            call.respond(HttpStatusCode.OK, mapOf(Pair("friends", friendsList)))
         }
     }
 
 
     route("/user/friends/{friendUuid}") {
-        authenticate("google_oauth2") {
-            post {
-                val principal = call.authentication.principal<OAuthAccessTokenResponse>()
+        post {
+            val principal = call.authentication.principal<OAuthAccessTokenResponse>()
 
-                if (principal == null) {
-                    call.respond(HttpStatusCode.Unauthorized)
-                } else {
-                    call.respond(HttpStatusCode.NotImplemented)
-                }
+            if (principal == null) {
+                call.respond(HttpStatusCode.Unauthorized)
+            } else {
+                call.respond(HttpStatusCode.NotImplemented)
             }
         }
     }
