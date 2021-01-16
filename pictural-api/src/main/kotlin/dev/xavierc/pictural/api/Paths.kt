@@ -92,6 +92,7 @@ object Paths {
     @KtorExperimentalLocationsAPI
     @Location("/user") class UserInfoGet()
 
+
     @KtorExperimentalLocationsAPI
     @Location("/user/login") class UserLogin()
 }

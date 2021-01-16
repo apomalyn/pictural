@@ -9,8 +9,7 @@ import java.util.*
 object Users : Table() {
     val uuid: Column<String> = varchar("uuid", 128).primaryKey()
     val name: Column<String> = varchar("name", 128)
-    val email: Column<String> = varchar("email", 128)
-    val darkModeEnabled: Column<Boolean> = bool("darkModeEnabled")
+    val darkModeEnabled: Column<Boolean> = bool("darkModeEnabled").default(false)
     val pictureUuid: Column<UUID?> = (uuid("pictureUuid") references ImagesInfo.uuid).nullable()
 }
 
@@ -29,7 +28,7 @@ class UserRepository {
             val results = Users.select { Users.uuid eq uuid }.singleOrNull()
 
             if (results != null) {
-                user = User(uuid, results[Users.name], results[Users.email], results[Users.darkModeEnabled], results[Users.pictureUuid])
+                user = User(uuid, results[Users.name], results[Users.darkModeEnabled], results[Users.pictureUuid])
             }
         }
 
@@ -56,4 +55,22 @@ class UserRepository {
             }
         }
     }
+
+    /**
+     * Create an user
+     */
+    fun addUserInfo(uuid: String, name: String, pictureUuid: UUID?) {
+        transaction {
+            Users.insert {
+                it[Users.uuid] = uuid
+                it[Users.name] = name
+
+                if(pictureUuid != null) {
+                    it[Users.pictureUuid] = pictureUuid
+                }
+            }
+        }
+    }
+
+
 }

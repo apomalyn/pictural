@@ -17,7 +17,6 @@ import java.util.*
  * 
  * @param uuid UUID of the user
  * @param name Name of the user
- * @param email email of the user
  * @param darkModeEnabled If the dark mode is enabled for the UI
  * @param pictureUuid Uuid of the profile picture of the user
  */
@@ -26,8 +25,6 @@ data class User(
     val uuid: String,
     /* Name of the user */
     val name: String,
-    /* email of the user */
-    val email: String,
     /* If the dark mode is enabled for the UI */
     val darkModeEnabled: Boolean? = null,
     /* Url of the profile picture of the user */

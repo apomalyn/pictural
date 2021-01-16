@@ -28,6 +28,7 @@ import io.ktor.routing.route
 
 import dev.xavierc.pictural.api.Paths
 import dev.xavierc.pictural.api.models.User
+import dev.xavierc.pictural.api.models.UserPutRequest
 import dev.xavierc.pictural.api.models.UserUpdateRequest
 import dev.xavierc.pictural.api.repository.UserRepository
 
@@ -101,31 +102,16 @@ fun Route.UserApi() {
 
 
     get { _: Paths.UserInfoGet ->
-        val principal = call.authentication.principal<OAuthAccessTokenResponse>()
+        val userUuid: String? = call.sessions.get("userUuid") as String?
 
-        if (principal == null) {
+        if (userUuid == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
-            val exampleContentType = "application/json"
-            val exampleContentString = """{
-              "pictureUuid" : "pictureUuid",
-              "name" : "Xavier Chrétien",
-              "darkModeEnabled" : false,
-              "uuid" : "046b6c7f-0b8a-43b9-b35d-6489e6daee91",
-              "email" : "email"
-            }"""
-
             val results = userRepository.getUserInfo("tet")
             if (results != null) {
                 call.respond(results)
             } else {
                 call.respond(HttpStatusCode.NotFound)
-            }
-
-            when (exampleContentType) {
-                "application/json" -> call.respond(gson.fromJson(exampleContentString, empty::class.java))
-                "application/xml" -> call.respondText(exampleContentString, ContentType.Text.Xml)
-                else -> call.respondText(exampleContentString)
             }
         }
     }
@@ -148,8 +134,23 @@ fun Route.UserApi() {
         }
 
         post {
-            print(call.receiveText())
-            call.respond(200)
+            val userUuid: String? = call.sessions.get("userUuid") as String?
+
+            when {
+                userUuid == null -> {
+                    call.respond(HttpStatusCode.OK)
+                }
+                userRepository.getUserInfo(userUuid) != null -> {
+                    // User already exists
+                    call.respond(HttpStatusCode.Conflict)
+                }
+                else -> {
+                    val request = call.receive<UserPutRequest>()
+
+                    userRepository.addUserInfo(userUuid, request.name, request.pictureUuid)
+                    call.respond(HttpStatusCode.Created)
+                }
+            }
         }
     }
 
@@ -170,7 +171,7 @@ fun Route.UserApi() {
                     call.sessions.set(results.uuid)
                     call.respond(HttpStatusCode.OK)
                 } else {
-                    // redirect --> log up
+                    call.sessions.set(id)
                     call.respond(HttpStatusCode.NotFound)
                 }
             } else {
