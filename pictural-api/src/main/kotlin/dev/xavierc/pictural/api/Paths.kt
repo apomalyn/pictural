@@ -70,13 +70,21 @@ object Paths {
     @KtorExperimentalLocationsAPI
     @Location("/images") class ImagesGet()
 
+
+    /**
+     * Add a friend.
+     *
+     */
+    @KtorExperimentalLocationsAPI
+    @Location("/user/friends/{friendUuid}") class UserFriendsAdd(val friendUuid: String)
+
     /**
      * Remove a friend from the list
      * 
      * @param friendUuid UUID of the friend to remove 
      */
     @KtorExperimentalLocationsAPI
-    @Location("/user/friends/{friendUuid}") class UserFriendsDelete(val friendUuid: java.util.UUID)
+    @Location("/user/friends/{friendUuid}") class UserFriendsDelete(val friendUuid: String)
 
     /**
      * Get the list of friend for this user.

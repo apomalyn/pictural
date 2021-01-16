@@ -2,6 +2,7 @@ package dev.xavierc.pictural.api.repository
 
 import dev.xavierc.pictural.api.models.Friend
 import dev.xavierc.pictural.api.models.User
+import dev.xavierc.pictural.api.utils.UuidDontExistException
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -89,5 +90,48 @@ class UserRepository {
         }
 
         return friendList.toList()
+    }
+
+    /**
+     * Creation a friendship between [userUuid] and [friendUuid]
+     */
+    fun addFriend(userUuid: String, friendUuid: String): Boolean {
+        try {
+            transaction {
+                if (Users.select(Users.uuid.eq(userUuid) or Users.uuid.eq(friendUuid)).count() != 2) {
+                    throw UuidDontExistException()
+                }
+                Friends.insert {
+                    it[Friends.userUuid] = userUuid
+                    it[Friends.friendUuid] = friendUuid
+                }
+                // Do the friendship on the other side.
+                // TODO improve schema
+                Friends.insert {
+                    it[Friends.userUuid] = friendUuid
+                    it[Friends.friendUuid] = userUuid
+                }
+            }
+        } catch (e: UuidDontExistException) {
+            // TODO improve login
+            print("userUuid or friendUuid not found inside the database")
+            return false
+        }
+        return true
+    }
+
+    /**
+     * Remove the friendship between [userUuid] and [friendUuid]
+     */
+    fun deleteFriend(userUuid: String, friendUuid: String): Boolean {
+        try {
+            transaction {
+                Friends.deleteWhere { Friends.userUuid.eq(userUuid) or Friends.userUuid.eq(friendUuid) }
+            }
+        } catch (e: Exception) {
+            print(e.message)
+            return false
+        }
+        return true
     }
 }

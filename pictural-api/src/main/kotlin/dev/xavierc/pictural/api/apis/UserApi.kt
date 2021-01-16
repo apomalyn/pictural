@@ -44,17 +44,6 @@ fun Route.UserApi() {
 
     val userRepository by di().instance<UserRepository>()
 
-    delete { _: Paths.UserFriendsDelete ->
-        val principal = call.authentication.principal<OAuthAccessTokenResponse>()
-
-        if (principal == null) {
-            call.respond(HttpStatusCode.Unauthorized)
-        } else {
-            call.respond(HttpStatusCode.NotImplemented)
-        }
-    }
-
-
     get { _: Paths.UserFriendsGet ->
         val userUuid: String? = call.sessions.get("userUuid") as String?
 
@@ -67,19 +56,33 @@ fun Route.UserApi() {
         }
     }
 
+    post { request: Paths.UserFriendsAdd ->
+        val userUuid: String? = call.sessions.get("userUuid") as String?
 
-    route("/user/friends/{friendUuid}") {
-        post {
-            val principal = call.authentication.principal<OAuthAccessTokenResponse>()
-
-            if (principal == null) {
-                call.respond(HttpStatusCode.Unauthorized)
+        if (userUuid == null) {
+            call.respond(HttpStatusCode.Unauthorized)
+        } else {
+            if(userRepository.addFriend(userUuid, request.friendUuid)) {
+                call.respond(HttpStatusCode.OK)
             } else {
-                call.respond(HttpStatusCode.NotImplemented)
+                call.respond(HttpStatusCode.NotFound)
             }
         }
     }
 
+    delete { request: Paths.UserFriendsDelete ->
+        val userUuid: String? = call.sessions.get("userUuid") as String?
+
+        if (userUuid == null) {
+            call.respond(HttpStatusCode.Unauthorized)
+        } else {
+            if(userRepository.deleteFriend(userUuid, request.friendUuid)) {
+                call.respond(HttpStatusCode.OK)
+            } else {
+                call.respond(HttpStatusCode.NotFound)
+            }
+        }
+    }
 
     get { _: Paths.UserInfoGet ->
         val userUuid: String? = call.sessions.get("userUuid") as String?
