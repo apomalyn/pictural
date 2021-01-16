@@ -125,7 +125,7 @@ fun Route.ImageApi() {
 
             when {
                 imageInfo == null -> call.respond(HttpStatusCode.NotFound)
-                (!imageInfo.authorized.contains(userUuid) && imageInfo.ownerUuid != userUuid)  -> {
+                (!imageInfo.authorized.contains(userUuid) && imageInfo.ownerUuid != userUuid) -> {
                     // Not the owner or one of the authorized users
                     call.respond(HttpStatusCode.Unauthorized)
                 }
@@ -144,7 +144,7 @@ fun Route.ImageApi() {
 
             when {
                 imageInfo == null -> call.respond(HttpStatusCode.NotFound)
-                (!imageInfo.authorized.contains(userUuid) && imageInfo.ownerUuid != userUuid)  -> {
+                (!imageInfo.authorized.contains(userUuid) && imageInfo.ownerUuid != userUuid) -> {
                     // Not the owner or one of the authorized users
                     call.respond(HttpStatusCode.Unauthorized)
                 }

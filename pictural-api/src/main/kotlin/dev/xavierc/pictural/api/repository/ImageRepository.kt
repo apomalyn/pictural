@@ -66,6 +66,9 @@ class ImageRepository {
         }
     }
 
+    /**
+     * Get all the images owned and shared by the user [userUuid]
+     */
     fun getImagesByUser(userUuid: String): List<ImageInfo> {
         val images: MutableList<ImageInfo> = mutableListOf()
 
