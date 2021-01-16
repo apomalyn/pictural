@@ -13,24 +13,26 @@ package dev.xavierc.pictural.api.models
 
 import dev.xavierc.pictural.api.models.Friend
 import dev.xavierc.pictural.api.models.ImageInfo
+import java.util.*
 
 /**
  * 
  * @param uuid UUID of the album
  * @param title Title of the album
+ * @param ownerUuid Uuid of the owner of the album
  * @param images Images of this album
  * @param friends List of the friend that can access this album
  */
 data class Album (
     /* UUID of the album */
-    val uuid: java.util.UUID,
+    val uuid: UUID,
     /* Owner of the album */
-    val ownerUuid: java.util.UUID,
+    val ownerUuid: String,
     /* Title of the album */
-    val title: kotlin.String,
+    val title: String,
     /* Images of this album */
-    val images: kotlin.Array<ImageInfo>,
+    val images: List<UUID>,
     /* List of the friend that can access this album */
-    val friends: kotlin.Array<Friend>
+    val friends: List<Friend>
 ) 
 

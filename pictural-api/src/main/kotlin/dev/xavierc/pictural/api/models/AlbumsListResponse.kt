@@ -17,7 +17,7 @@ import dev.xavierc.pictural.api.models.Album
  * 
  * @param albums 
  */
-data class InlineResponse2002 (
-    val albums: kotlin.Array<Album>? = null
+data class AlbumsListResponse (
+    val albums: List<Album>
 ) 
 

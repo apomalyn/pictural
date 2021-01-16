@@ -17,6 +17,13 @@ import java.util.*
 
 object Paths {
     /**
+     * Add an album to the current user
+     *
+     */
+    @KtorExperimentalLocationsAPI
+    @Location("/album") class AlbumAdd()
+
+    /**
      * Delete an existing album
      * 
      * @param albumUuid  
@@ -30,6 +37,24 @@ object Paths {
      */
     @KtorExperimentalLocationsAPI
     @Location("/albums") class AlbumsGet()
+
+    /**
+     * Share the album with a friend
+     *
+     * @param albumUuid UUID of the album to share
+     * @param friendUuid UUID of the friend to share with
+     */
+    @KtorExperimentalLocationsAPI
+    @Location("/album/{albumUuid}/{friendUuid}") class AlbumAccessAdd(val albumUuid: UUID, val friendUuid: String)
+
+    /**
+     * Remove friend access to album
+     *
+     * @param albumUuid UUID of the album
+     * @param friendUuid UUID of the friend to remove access
+     */
+    @KtorExperimentalLocationsAPI
+    @Location("/album/{albumUuid}/{friendUuid}") class AlbumAccessDelete(val albumUuid: UUID, val friendUuid: String)
 
     /**
      * Share the image with a friend

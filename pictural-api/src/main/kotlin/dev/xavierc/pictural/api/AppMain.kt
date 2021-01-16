@@ -13,6 +13,7 @@ import dev.xavierc.pictural.api.apis.AlbumApi
 import dev.xavierc.pictural.api.apis.ImageApi
 import dev.xavierc.pictural.api.apis.UserApi
 import dev.xavierc.pictural.api.models.User
+import dev.xavierc.pictural.api.repository.AlbumRepository
 import dev.xavierc.pictural.api.repository.ImageRepository
 import dev.xavierc.pictural.api.repository.UserRepository
 import dev.xavierc.pictural.api.repository.initDB
@@ -96,6 +97,7 @@ fun Application.main() {
     di {
         bind<UserRepository>() with singleton { UserRepository() }
         bind<ImageRepository>() with singleton { ImageRepository() }
+        bind<AlbumRepository>() with singleton { AlbumRepository() }
     }
 
     environment.monitor.subscribe(ApplicationStopping)
