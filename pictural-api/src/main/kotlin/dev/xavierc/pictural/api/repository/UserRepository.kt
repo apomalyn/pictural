@@ -93,6 +93,21 @@ class UserRepository {
     }
 
     /**
+     * Check if user is a friend
+     */
+    fun isFriend(userUuid: String, friendUuid: String): Boolean {
+        var isFriend = false
+
+        transaction {
+            if(Friends.select { Friends.userUuid.eq(userUuid) and Friends.friendUuid.eq(friendUuid) }.count() > 0) {
+                isFriend = true
+            }
+        }
+
+        return isFriend
+    }
+
+    /**
      * Creation a friendship between [userUuid] and [friendUuid]
      */
     fun addFriend(userUuid: String, friendUuid: String): Boolean {

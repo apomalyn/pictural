@@ -17,7 +17,7 @@ import dev.xavierc.pictural.api.models.ImageInfo
  * 
  * @param images 
  */
-data class InlineResponse2001 (
-    val images: kotlin.Array<ImageInfo>? = null
+data class ImageListResponse (
+    val images: List<ImageInfo>? = null
 ) 
 

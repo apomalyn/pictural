@@ -13,6 +13,7 @@ package dev.xavierc.pictural.api
 
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Location
+import java.util.*
 
 object Paths {
     /**
@@ -31,13 +32,22 @@ object Paths {
     @Location("/albums") class AlbumsGet()
 
     /**
-     * Delete an image
-     * 
-     * @param imageUuid UUID of the image to delete 
-     * @param friendUuid  
+     * Share the image with a friend
+     *
+     * @param imageUuid UUID of the image to share
+     * @param friendUuid UUID of the friend to share with
      */
     @KtorExperimentalLocationsAPI
-    @Location("/image/{imageUuid}/{friendUuid}") class ImageAccessDelete(val imageUuid: java.util.UUID, val friendUuid: java.util.UUID)
+    @Location("/image/{imageUuid}/{friendUuid}") class ImageAccessAdd(val imageUuid: UUID, val friendUuid: String)
+
+    /**
+     * Remove friend access to an image
+     * 
+     * @param imageUuid UUID of the image
+     * @param friendUuid UUID of the friend to remove access
+     */
+    @KtorExperimentalLocationsAPI
+    @Location("/image/{imageUuid}/{friendUuid}") class ImageAccessDelete(val imageUuid: java.util.UUID, val friendUuid: String)
 
     /**
      * Delete an image

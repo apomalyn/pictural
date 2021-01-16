@@ -23,10 +23,8 @@ data class ImageInfo (
     /* UUID of the image */
     val uuid: java.util.UUID,
     /* UUID of the owner of the image */
-    val ownerUuid: java.util.UUID,
-    /* Url to access the image */
-    val url: kotlin.String,
+    val ownerUuid: String,
     /* List of UUID. Each UUID correspond to someone who has access at this image. */
-    val authorized: kotlin.Array<java.util.UUID>
+    val authorized: List<String>
 ) 
 

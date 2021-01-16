@@ -25,6 +25,7 @@ import io.ktor.routing.put
 import io.ktor.routing.route
 
 import dev.xavierc.pictural.api.Paths
+import dev.xavierc.pictural.api.models.FriendsListResponse
 import dev.xavierc.pictural.api.models.UserPutRequest
 import dev.xavierc.pictural.api.models.UserUpdateRequest
 import dev.xavierc.pictural.api.repository.UserRepository
@@ -52,7 +53,7 @@ fun Route.UserApi() {
         } else {
             val friendsList = userRepository.getFriendsList(userUuid)
 
-            call.respond(HttpStatusCode.OK, mapOf(Pair("friends", friendsList)))
+            call.respond(HttpStatusCode.OK, FriendsListResponse(friendsList))
         }
     }
 
@@ -136,7 +137,6 @@ fun Route.UserApi() {
             }
         }
     }
-
 
     authenticate("google_oauth2") {
         post { _: Paths.UserLogin ->

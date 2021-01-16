@@ -17,7 +17,7 @@ import dev.xavierc.pictural.api.models.Friend
  * 
  * @param friends 
  */
-data class InlineResponse200 (
-    val friends: kotlin.Array<Friend>? = null
+data class FriendsListResponse (
+    val friends: List<Friend>? = null
 ) 
 

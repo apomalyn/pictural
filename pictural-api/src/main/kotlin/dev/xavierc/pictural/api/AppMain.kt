@@ -13,6 +13,7 @@ import dev.xavierc.pictural.api.apis.AlbumApi
 import dev.xavierc.pictural.api.apis.ImageApi
 import dev.xavierc.pictural.api.apis.UserApi
 import dev.xavierc.pictural.api.models.User
+import dev.xavierc.pictural.api.repository.ImageRepository
 import dev.xavierc.pictural.api.repository.UserRepository
 import dev.xavierc.pictural.api.repository.initDB
 import io.ktor.application.*
@@ -28,6 +29,7 @@ import org.kodein.di.bind
 import org.kodein.di.ktor.di
 import org.kodein.di.singleton
 import java.io.File
+import java.util.*
 
 
 @KtorExperimentalAPI
@@ -51,6 +53,20 @@ fun Application.main() {
     install(AutoHeadResponse) // see http://ktor.io/features/autoheadresponse.html
     install(HSTS, ApplicationHstsConfiguration()) // see http://ktor.io/features/hsts.html
     install(Compression, ApplicationCompressionConfiguration()) // see http://ktor.io/features/compression.html
+    install(DataConversion) {
+        convert<UUID> {
+            decode { values, _ -> values.singleOrNull()?.let { UUID.fromString(it) }
+
+            }
+            encode {
+                when(it) {
+                    null -> listOf()
+                    is UUID -> listOf(it.toString())
+                    else -> throw DataConversionException("Cannot convert to UUID")
+                }
+            }
+        }
+    }
     install(Locations) // see http://ktor.io/features/locations.html
     install(CallLogging)
     install(Sessions) {
@@ -79,6 +95,7 @@ fun Application.main() {
 
     di {
         bind<UserRepository>() with singleton { UserRepository() }
+        bind<ImageRepository>() with singleton { ImageRepository() }
     }
 
     environment.monitor.subscribe(ApplicationStopping)
