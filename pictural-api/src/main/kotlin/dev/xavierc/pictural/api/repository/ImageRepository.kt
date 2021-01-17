@@ -1,5 +1,6 @@
 package dev.xavierc.pictural.api.repository
 
+import dev.xavierc.pictural.api.models.Friend
 import dev.xavierc.pictural.api.models.ImageInfo
 import dev.xavierc.pictural.api.repository.ImagesInfo.references
 import dev.xavierc.pictural.api.utils.UuidDontExistException
@@ -47,15 +48,14 @@ class ImageRepository {
             val imageInfoResult = ImagesInfo.select { ImagesInfo.uuid eq imageUuid }.singleOrNull()
 
             if (imageInfoResult != null) {
-                val authorizedUser = ImagesAuthorizedUsers.slice(ImagesAuthorizedUsers.userUuid).select { ImagesAuthorizedUsers.imageUuid eq imageUuid }
-                    .mapIndexed { _, it ->
-                        it[ImagesAuthorizedUsers.userUuid]
-                    }
+                val authorizedUsers = ImagesAuthorizedUsers.rightJoin(Users).slice(Users.uuid, Users.name, Users.pictureUuid)
+                    .select { ImagesAuthorizedUsers.imageUuid.eq(imageUuid) and Users.uuid.eq(ImagesAuthorizedUsers.userUuid)}
+                    .mapIndexed { _, it -> Friend(it[Users.uuid], it[Users.name], it[Users.pictureUuid]) }
 
                 imageInfo = ImageInfo(
                     imageInfoResult[ImagesInfo.uuid],
                     imageInfoResult[ImagesInfo.ownerUuid],
-                    authorizedUser,
+                    authorizedUsers,
                     imageInfoResult[ImagesInfo.extensionType]
                 )
             }

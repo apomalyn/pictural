@@ -11,8 +11,6 @@
 */
 package dev.xavierc.pictural.api.models
 
-import dev.xavierc.pictural.api.models.Friend
-import dev.xavierc.pictural.api.models.ImageInfo
 import java.util.*
 
 /**
@@ -21,7 +19,7 @@ import java.util.*
  * @param title Title of the album
  * @param ownerUuid Uuid of the owner of the album
  * @param images Images of this album
- * @param friends List of the friend that can access this album
+ * @param friends List of the friends that can access this album
  */
 data class Album (
     /* UUID of the album */

@@ -1,3 +1,5 @@
 {
-  "app_name": "Pictural"
+  "app_name": "Pictural",
+  "not_found": "Oups! Page not found....",
+  "not_found_button": "Return to home page"
 }
