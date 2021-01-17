@@ -18,6 +18,7 @@ package dev.xavierc.pictural.api.models
  * @param ownerUuid UUID of the owner of the image
  * @param url Url to access the image
  * @param authorized List of UUID. Each UUID correspond to someone who has access at this image.
+ * @param extensionType Extension type of the image
  */
 data class ImageInfo (
     /* UUID of the image */
@@ -25,6 +26,8 @@ data class ImageInfo (
     /* UUID of the owner of the image */
     val ownerUuid: String,
     /* List of UUID. Each UUID correspond to someone who has access at this image. */
-    val authorized: List<String>
+    val authorized: List<String>,
+    /* Extension type of the image */
+    val extensionType: String
 ) 
 

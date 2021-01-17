@@ -10,6 +10,7 @@ import java.util.*
 object ImagesInfo : Table() {
     val uuid: Column<UUID> = uuid("uuid").autoGenerate().primaryKey()
     val ownerUuid: Column<String> = varchar("ownerUuid", 128) references Users.uuid
+    val extensionType: Column<String> = varchar("type", length = 12)
 }
 
 /**
@@ -24,11 +25,12 @@ class ImageRepository {
     /**
      * Add an image linked to [ownerUuid]
      */
-    fun addImageInfo(ownerUuid: String): UUID? {
+    fun addImageInfo(ownerUuid: String, extension: String): UUID? {
         var uuid: UUID? = null
         transaction {
             uuid = ImagesInfo.insert {
                 it[ImagesInfo.ownerUuid] = ownerUuid
+                it[ImagesInfo.extensionType] = extension
             } get ImagesInfo.uuid
         }
 
@@ -50,7 +52,12 @@ class ImageRepository {
                         it[ImagesAuthorizedUsers.userUuid]
                     }
 
-                imageInfo = ImageInfo(imageInfoResult[ImagesInfo.uuid], imageInfoResult[ImagesInfo.ownerUuid], authorizedUser)
+                imageInfo = ImageInfo(
+                    imageInfoResult[ImagesInfo.uuid],
+                    imageInfoResult[ImagesInfo.ownerUuid],
+                    authorizedUser,
+                    imageInfoResult[ImagesInfo.extensionType]
+                )
             }
         }
 
@@ -76,12 +83,12 @@ class ImageRepository {
             ImagesInfo.leftJoin(ImagesAuthorizedUsers).slice(ImagesInfo.uuid)
                 // Add images owned by the user OR shared with it
                 .select { ImagesAuthorizedUsers.userUuid.eq(userUuid) or ImagesInfo.ownerUuid.eq(userUuid) }.forEach {
-                val image = getImageInfo(it[ImagesInfo.uuid])
+                    val image = getImageInfo(it[ImagesInfo.uuid])
 
-                if (image != null) {
-                    images.add(image)
+                    if (image != null) {
+                        images.add(image)
+                    }
                 }
-            }
         }
 
         return images.toList()

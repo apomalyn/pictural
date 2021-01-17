@@ -9,8 +9,6 @@
 package dev.xavierc.pictural.api.apis
 
 import io.ktor.application.call
-import io.ktor.http.HttpStatusCode
-import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.post
 import io.ktor.routing.route
@@ -20,9 +18,11 @@ import dev.xavierc.pictural.api.models.ImageInfo
 import dev.xavierc.pictural.api.models.ImageListResponse
 import dev.xavierc.pictural.api.repository.ImageRepository
 import dev.xavierc.pictural.api.repository.UserRepository
+import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.locations.*
 import io.ktor.request.*
+import io.ktor.response.*
 import io.ktor.sessions.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -33,6 +33,7 @@ import org.kodein.di.ktor.di
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
+import java.util.*
 
 @KtorExperimentalLocationsAPI
 fun Route.ImageApi(imageDir: File) {
@@ -134,7 +135,9 @@ fun Route.ImageApi(imageDir: File) {
                     // Not the owner or one of the authorized users
                     call.respond(HttpStatusCode.Unauthorized)
                 }
-                else -> call.respond(HttpStatusCode.NotImplemented) // TODO download file
+                else -> {
+                    call.respondFile(baseDir = imageDir, fileName = "${imageInfo.uuid}.${imageInfo.extensionType}")
+                }
             }
         }
     }
@@ -159,19 +162,20 @@ fun Route.ImageApi(imageDir: File) {
         }
     }
 
+    // Upload of an image
     post { _: Paths.ImageUpload ->
-//        val userUuid = call.sessions.get("userUuid") as String?
-        val userUuid = "123"
+        val userUuid = call.sessions.get("userUuid") as String?
 
         if (userUuid == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
-            val imageUuid = imageRepository.addImageInfo(userUuid)
+            var imageUuid: UUID? = null
             val multipart = call.receiveMultipart()
             multipart.forEachPart { part ->
                 when (part) {
                     is PartData.FileItem -> {
                         val ext = File(part.originalFileName).extension
+                        imageUuid = imageRepository.addImageInfo(userUuid, ext)
                         val file = File(imageDir, "${imageUuid}.$ext")
                         part.streamProvider().use { input -> file.outputStream().buffered().use { output -> input.copyToSuspend(output) } }
                     }
@@ -180,7 +184,8 @@ fun Route.ImageApi(imageDir: File) {
                 part.dispose()
             }
 
-            call.respond(HttpStatusCode.OK)
+
+            call.respond(HttpStatusCode.OK, imageUuid!!.toString())
         }
     }
 
