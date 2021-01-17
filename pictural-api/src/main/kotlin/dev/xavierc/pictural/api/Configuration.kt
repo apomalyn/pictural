@@ -2,17 +2,13 @@ package dev.xavierc.pictural.api
 
 // Use this file to hold package-level internal functions that return receiver object passed to the `install` method.
 import io.ktor.auth.OAuthServerSettings
-import io.ktor.features.Compression
-import io.ktor.features.HSTS
-import io.ktor.features.deflate
-import io.ktor.features.gzip
-import io.ktor.features.minimumSize
-import io.ktor.http.HttpMethod
 import io.ktor.util.KtorExperimentalAPI
 import java.time.Duration
 import java.util.concurrent.Executors
 
 import dev.xavierc.pictural.api.settings
+import io.ktor.features.*
+import io.ktor.http.*
 
 
 /**
@@ -50,6 +46,7 @@ internal fun ApplicationCompressionConfiguration(): Compression.Configuration.()
         deflate {
             priority = 10.0
             minimumSize(1024) // condition
+            excludeContentType(ContentType.Image.Any)
         }
     }
 }

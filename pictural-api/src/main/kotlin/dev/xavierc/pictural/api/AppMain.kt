@@ -30,6 +30,7 @@ import org.kodein.di.bind
 import org.kodein.di.ktor.di
 import org.kodein.di.singleton
 import java.io.File
+import java.io.IOException
 import java.util.*
 
 
@@ -70,8 +71,20 @@ fun Application.main() {
     }
     install(Locations) // see http://ktor.io/features/locations.html
     install(CallLogging)
+
+    val picturalConfig = environment.config.config("pictural")
+    val sessionConfig = picturalConfig.config("session.cookie")
+
+    val imageDirPath: String = picturalConfig.property("images.dir").getString()
+    val imageDir = File(imageDirPath)
+    if (!imageDir.mkdirs() && !imageDir.exists()) {
+        throw IOException("Failed to create directory ${imageDir.absolutePath}")
+    }
+
     install(Sessions) {
-        cookie<String>("userUuid")
+        cookie<String>("userUuid") {
+            transform(SessionTransportTransformerMessageAuthentication(hex(sessionConfig.property("key").getString())))
+        }
     }
     install(Authentication) {
         oauth("google_oauth2") {
@@ -84,7 +97,7 @@ fun Application.main() {
     }
     install(Routing) {
         AlbumApi()
-        ImageApi()
+        ImageApi(imageDir)
         UserApi()
         routing {
             get("/") { call.respondText("HELLO") }

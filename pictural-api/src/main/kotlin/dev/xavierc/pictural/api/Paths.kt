@@ -124,11 +124,16 @@ object Paths {
 
     /**
      * Get the list of images info of the current user
-     * 
      */
     @KtorExperimentalLocationsAPI
     @Location("/images") class ImagesGet()
 
+    /**
+     * Get the list of images info of the current user
+     *
+     */
+    @KtorExperimentalLocationsAPI
+    @Location("/image/upload") class ImageUpload()
 
     /**
      * Add a friend.
