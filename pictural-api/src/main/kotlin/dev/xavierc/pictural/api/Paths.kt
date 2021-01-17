@@ -159,7 +159,27 @@ object Paths {
     @KtorExperimentalLocationsAPI
     @Location("/user") class UserInfoGet()
 
+    /**
+     * Update the information of the user.
+     */
+    @KtorExperimentalLocationsAPI
+    @Location("/user") class UserInfoUpdate()
 
+    /**
+     * Create a new user
+     */
+    @KtorExperimentalLocationsAPI
+    @Location("/user") class UserInfoAdd()
+
+    /**
+     * Log in the user
+     */
     @KtorExperimentalLocationsAPI
     @Location("/user/login") class UserLogin()
+
+    /**
+     * Log out the user
+     */
+    @KtorExperimentalLocationsAPI
+    @Location("/user/logout") class UserLogout()
 }

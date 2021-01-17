@@ -21,12 +21,11 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.post
-import io.ktor.routing.put
 import io.ktor.routing.route
 
 import dev.xavierc.pictural.api.Paths
 import dev.xavierc.pictural.api.models.FriendsListResponse
-import dev.xavierc.pictural.api.models.UserPutRequest
+import dev.xavierc.pictural.api.models.UserAddRequest
 import dev.xavierc.pictural.api.models.UserUpdateRequest
 import dev.xavierc.pictural.api.repository.UserRepository
 
@@ -45,8 +44,9 @@ fun Route.UserApi() {
 
     val userRepository by di().instance<UserRepository>()
 
+    // Get the friends list of the user
     get { _: Paths.UserFriendsGet ->
-        val userUuid: String? = call.sessions.get("userUuid") as String?
+        val userUuid = call.sessions.get("userUuid") as String?
 
         if (userUuid == null) {
             call.respond(HttpStatusCode.Unauthorized)
@@ -57,13 +57,14 @@ fun Route.UserApi() {
         }
     }
 
+    // Add friend
     post { request: Paths.UserFriendsAdd ->
-        val userUuid: String? = call.sessions.get("userUuid") as String?
+        val userUuid = call.sessions.get("userUuid") as String?
 
         if (userUuid == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
-            if(userRepository.addFriend(userUuid, request.friendUuid)) {
+            if (userRepository.addFriend(userUuid, request.friendUuid)) {
                 call.respond(HttpStatusCode.OK)
             } else {
                 call.respond(HttpStatusCode.NotFound)
@@ -71,13 +72,14 @@ fun Route.UserApi() {
         }
     }
 
+    // Delete a friend
     delete { request: Paths.UserFriendsDelete ->
-        val userUuid: String? = call.sessions.get("userUuid") as String?
+        val userUuid = call.sessions.get("userUuid") as String?
 
         if (userUuid == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
-            if(userRepository.deleteFriend(userUuid, request.friendUuid)) {
+            if (userRepository.deleteFriend(userUuid, request.friendUuid)) {
                 call.respond(HttpStatusCode.OK)
             } else {
                 call.respond(HttpStatusCode.NotFound)
@@ -85,8 +87,9 @@ fun Route.UserApi() {
         }
     }
 
+    // Get user info
     get { _: Paths.UserInfoGet ->
-        val userUuid: String? = call.sessions.get("userUuid") as String?
+        val userUuid = call.sessions.get("userUuid") as String?
 
         if (userUuid == null) {
             call.respond(HttpStatusCode.Unauthorized)
@@ -100,44 +103,45 @@ fun Route.UserApi() {
         }
     }
 
-    route("/user") {
-        put {
-            val userUuid: String? = call.sessions.get("userUuid") as String?
+    // Update user info
+    put { _: Paths.UserInfoUpdate ->
+        val userUuid = call.sessions.get("userUuid") as String?
 
-            if (userUuid == null) {
-                call.respond(HttpStatusCode.Unauthorized)
-            } else {
-                val request = call.receive<UserUpdateRequest>()
+        if (userUuid == null) {
+            call.respond(HttpStatusCode.Unauthorized)
+        } else {
+            val request = call.receive<UserUpdateRequest>()
 
-                userRepository.updateUserInfo(userUuid, request.name, request.darkModeEnabled, request.pictureUuid)
+            userRepository.updateUserInfo(userUuid, request.name, request.darkModeEnabled, request.pictureUuid)
 
-                // Update the session
-                call.sessions.set(userRepository.getUserInfo(userUuid))
+            // Update the session
+            call.sessions.set(userRepository.getUserInfo(userUuid))
+            call.respond(HttpStatusCode.OK)
+        }
+    }
+
+    // Add user info (create a new user)
+    post { _: Paths.UserInfoAdd ->
+        val userUuid = call.sessions.get("userUuid") as String?
+
+        when {
+            userUuid == null -> {
                 call.respond(HttpStatusCode.OK)
             }
-        }
+            userRepository.getUserInfo(userUuid) != null -> {
+                // User already exists
+                call.respond(HttpStatusCode.Conflict)
+            }
+            else -> {
+                val request = call.receive<UserAddRequest>()
 
-        post {
-            val userUuid: String? = call.sessions.get("userUuid") as String?
-
-            when {
-                userUuid == null -> {
-                    call.respond(HttpStatusCode.OK)
-                }
-                userRepository.getUserInfo(userUuid) != null -> {
-                    // User already exists
-                    call.respond(HttpStatusCode.Conflict)
-                }
-                else -> {
-                    val request = call.receive<UserPutRequest>()
-
-                    userRepository.addUserInfo(userUuid, request.name, request.pictureUuid)
-                    call.respond(HttpStatusCode.Created)
-                }
+                userRepository.addUserInfo(userUuid, request.name, request.pictureUuid)
+                call.respond(HttpStatusCode.Created)
             }
         }
     }
 
+    // Login with oauth
     authenticate("google_oauth2") {
         post { _: Paths.UserLogin ->
             val principal = call.authentication.principal<OAuthAccessTokenResponse.OAuth2>() ?: error("No principal")
@@ -163,10 +167,9 @@ fun Route.UserApi() {
         }
     }
 
-    route("/user/logout") {
-        post {
-            call.sessions.clear("user")
-            call.respond(HttpStatusCode.OK)
-        }
+    // Log out the user
+    post { _: Paths.UserLogout ->
+        call.sessions.clear("userUuid")
+        call.respond(HttpStatusCode.OK)
     }
 }

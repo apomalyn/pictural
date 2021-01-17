@@ -8,4 +8,4 @@ import java.util.*
  * @param name Name of the user
  * @param pictureUuid pictureUuid of the user
  */
-data class UserPutRequest(val name: String, val pictureUuid: UUID?)
+data class UserAddRequest(val name: String, val pictureUuid: UUID?)

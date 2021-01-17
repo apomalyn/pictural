@@ -38,6 +38,7 @@ fun Route.ImageApi() {
     val imageRepository by di().instance<ImageRepository>()
     val userRepository by di().instance<UserRepository>()
 
+    // Add access to an image
     post { request: Paths.ImageAccessAdd ->
         val userUuid = call.sessions.get("userUuid") as String?
 
@@ -61,6 +62,7 @@ fun Route.ImageApi() {
         }
     }
 
+    // Remove access to an image
     delete { request: Paths.ImageAccessDelete ->
         val userUuid = call.sessions.get("userUuid") as String?
 
@@ -89,6 +91,7 @@ fun Route.ImageApi() {
         }
     }
 
+    // Delete an image
     delete { request: Paths.ImageDelete ->
         val userUuid = call.sessions.get("userUuid") as String?
 
@@ -115,6 +118,7 @@ fun Route.ImageApi() {
         }
     }
 
+    // Get an image
     get { request: Paths.ImageGet ->
         val userUuid = call.sessions.get("userUuid") as String?
 
@@ -134,6 +138,7 @@ fun Route.ImageApi() {
         }
     }
 
+    // Get the info of an image
     get { request: Paths.ImageInfoGet ->
         val userUuid = call.sessions.get("userUuid") as String?
 
@@ -165,6 +170,7 @@ fun Route.ImageApi() {
         }
     }
 
+    // Get the images for the user.
     get { _: Paths.ImagesGet ->
         val userUuid = call.sessions.get("userUuid") as String?
 
