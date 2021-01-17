@@ -2,9 +2,9 @@ package dev.xavierc.pictural.api.repository
 
 import dev.xavierc.pictural.api.models.Album
 import dev.xavierc.pictural.api.models.Friend
-import dev.xavierc.pictural.api.repository.ImagesInfo.references
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.lang.Exception
 import java.util.*
 
 object Albums : Table() {
@@ -70,12 +70,143 @@ class AlbumRepository {
                 .select { Albums.ownerUuid.eq(userUuid) or AlbumsAuthorizedUsers.userUuid.eq(userUuid) }.forEach {
                     val album = getAlbum(it[Albums.uuid])
 
-                    if(album != null) {
+                    if (album != null) {
                         albums.add(album)
                     }
                 }
         }
 
         return albums
+    }
+
+    /**
+     * Add an album named [title], owned by [ownerUuid] with [images] on it and shared with [authorizedUsers]
+     */
+    fun addAlbum(ownerUuid: String, title: String, images: List<UUID>, authorizedUsers: List<String>): UUID? {
+        var uuid: UUID? = null
+
+        transaction {
+            // Add album
+            uuid = Albums.insert {
+                it[Albums.title] = title
+                it[Albums.ownerUuid] = ownerUuid
+            } get Albums.uuid
+
+            // Add the images
+            AlbumsImages.batchInsert(images) {
+                this[AlbumsImages.albumUuid] = uuid!!
+                this[AlbumsImages.imageUuid] = it
+            }
+
+            // Add the authorized user.
+            AlbumsAuthorizedUsers.batchInsert(authorizedUsers) {
+                this[AlbumsAuthorizedUsers.albumUuid] = uuid!!
+                this[AlbumsAuthorizedUsers.userUuid] = it
+            }
+        }
+
+        return uuid
+    }
+
+    /**
+     * Update the album [uuid]
+     */
+    fun updateAlbum(uuid: UUID, title: String): Boolean {
+        try {
+            transaction {
+                Albums.update({ Albums.uuid eq uuid }, limit = 1) {
+                    it[Albums.title] = title
+                }
+            }
+        } catch (e: Exception) {
+            print(e)
+            return false
+        }
+        return true
+    }
+
+    /**
+     * Delete the album [uuid]
+     */
+    fun deleteAlbum(uuid: UUID): Boolean {
+        try {
+            transaction {
+                Albums.deleteWhere { Albums.uuid eq uuid }
+            }
+        } catch (e: Exception) {
+            print(e)
+            return false
+        }
+        return true
+    }
+
+    /**
+     * Share the album [uuid] with the [authorizedUsers]. Old access aren't removed.
+     */
+    fun shareWith(uuid: UUID, authorizedUsers: List<String>): Boolean {
+        try {
+            transaction {
+                AlbumsAuthorizedUsers.batchInsert(data = authorizedUsers) {
+                    this[AlbumsAuthorizedUsers.albumUuid] = uuid
+                    this[AlbumsAuthorizedUsers.userUuid] = it
+                }
+            }
+        } catch (e: Exception) {
+            print(e)
+            return false
+        }
+
+        return true
+    }
+
+    /**
+     * Remove the access of the user [userUuid] to the album [uuid]
+     */
+    fun removeAccessTo(uuid: UUID, userUuid: String): Boolean {
+        try {
+            transaction {
+                AlbumsAuthorizedUsers.deleteWhere { AlbumsAuthorizedUsers.albumUuid.eq(uuid) and AlbumsAuthorizedUsers.userUuid.eq(userUuid) }
+            }
+        } catch (e: Exception) {
+            print(e)
+            return false
+        }
+
+        return true
+    }
+
+    /**
+     * Add all the [images] into the album [uuid]
+     */
+    fun addImages(uuid: UUID, images: List<UUID>): Boolean {
+        try {
+            transaction {
+                AlbumsImages.batchInsert(data = images) {
+                    this[AlbumsImages.albumUuid] = uuid
+                    this[AlbumsImages.imageUuid] = it
+                }
+            }
+        } catch (e: Exception) {
+            print(e)
+            return false
+        }
+
+        return true
+    }
+
+    /**
+     * Remove the image [imageUuid] from the album [uuid]
+     */
+    fun removeImage(uuid: UUID, imageUuid: UUID): Boolean {
+        try {
+            transaction {
+                AlbumsImages.deleteWhere { AlbumsImages.albumUuid.eq(uuid) and AlbumsImages.imageUuid.eq(imageUuid) }
+            }
+        } catch (e: Exception) {
+            print(e)
+            return false
+        }
+
+        return true
     }
 }

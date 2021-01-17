@@ -24,6 +24,14 @@ object Paths {
     @Location("/album") class AlbumAdd()
 
     /**
+     * Update an existing album
+     *
+     * @param albumUuid
+     */
+    @KtorExperimentalLocationsAPI
+    @Location("/album/{albumUuid}") class AlbumUpdate(val albumUuid: java.util.UUID)
+
+    /**
      * Delete an existing album
      * 
      * @param albumUuid  
@@ -39,13 +47,12 @@ object Paths {
     @Location("/albums") class AlbumsGet()
 
     /**
-     * Share the album with a friend
+     * Give access to the album at some friends
      *
      * @param albumUuid UUID of the album to share
-     * @param friendUuid UUID of the friend to share with
      */
     @KtorExperimentalLocationsAPI
-    @Location("/album/{albumUuid}/{friendUuid}") class AlbumAccessAdd(val albumUuid: UUID, val friendUuid: String)
+    @Location("/album/{albumUuid}/friend") class AlbumAccessAdd(val albumUuid: UUID)
 
     /**
      * Remove friend access to album
@@ -54,7 +61,24 @@ object Paths {
      * @param friendUuid UUID of the friend to remove access
      */
     @KtorExperimentalLocationsAPI
-    @Location("/album/{albumUuid}/{friendUuid}") class AlbumAccessDelete(val albumUuid: UUID, val friendUuid: String)
+    @Location("/album/{albumUuid}/friend/{friendUuid}") class AlbumAccessDelete(val albumUuid: UUID, val friendUuid: String)
+
+    /**
+     * Add images to the album
+     *
+     * @param albumUuid UUID of the album
+     */
+    @KtorExperimentalLocationsAPI
+    @Location("/album/{albumUuid}/image") class AlbumImageAdd(val albumUuid: UUID)
+
+    /**
+     * Remove image from the album
+     *
+     * @param albumUuid UUID of the album
+     * @param imageUuid UUID of the image to remove
+     */
+    @KtorExperimentalLocationsAPI
+    @Location("/album/{albumUuid}/image/{imageUuid}") class AlbumImageDelete(val albumUuid: UUID, val imageUuid: UUID)
 
     /**
      * Share the image with a friend

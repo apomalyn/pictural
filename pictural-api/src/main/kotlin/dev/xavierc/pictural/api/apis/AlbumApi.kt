@@ -11,70 +11,100 @@
  */
 package dev.xavierc.pictural.api.apis
 
-import com.google.gson.Gson
 import io.ktor.application.call
-import io.ktor.auth.authentication
-import io.ktor.auth.authenticate
-import io.ktor.auth.OAuthAccessTokenResponse
-import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
-import io.ktor.response.respondText
-import io.ktor.routing.Route
-import io.ktor.routing.post
-import io.ktor.routing.put
-import io.ktor.routing.route
 
 import dev.xavierc.pictural.api.Paths
-import dev.xavierc.pictural.api.models.AlbumsListResponse
-import dev.xavierc.pictural.api.models.ImageInfo
+import dev.xavierc.pictural.api.models.*
 import dev.xavierc.pictural.api.repository.AlbumRepository
 import io.ktor.locations.*
+import io.ktor.request.*
+import io.ktor.routing.*
 import io.ktor.sessions.*
 import org.kodein.di.instance
 import org.kodein.di.ktor.di
 
 @KtorExperimentalLocationsAPI
 fun Route.AlbumApi() {
-    val gson = Gson()
-    val empty = mutableMapOf<String, Any?>()
 
     val albumRepository by di().instance<AlbumRepository>()
 
-    post { request: Paths.AlbumAdd ->
+    // Add an album
+    post { _: Paths.AlbumAdd ->
         val userUuid = call.sessions.get("userUuid") as String?
 
         if (userUuid == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
-            call.respond(HttpStatusCode.NotImplemented)
-        }
-    }
+            val req = call.receive<AlbumAddRequest>()
 
-    delete { _: Paths.AlbumDelete ->
-        val userUuid = call.sessions.get("userUuid") as String?
+            val albumUuid = albumRepository.addAlbum(userUuid, req.title, req.images, req.friends)
 
-        if (userUuid == null) {
-            call.respond(HttpStatusCode.Unauthorized)
-        } else {
-            call.respond(HttpStatusCode.NotImplemented)
-        }
-    }
-
-
-    route("/album") {
-        put {
-            val userUuid = call.sessions.get("userUuid") as String?
-
-            if (userUuid == null) {
-                call.respond(HttpStatusCode.Unauthorized)
+            if(albumUuid != null) {
+                call.respond(HttpStatusCode.Created, albumUuid)
             } else {
-                call.respond(HttpStatusCode.NotImplemented)
+                call.respond(HttpStatusCode.InternalServerError)
             }
         }
     }
 
+    // Edit an album
+    put { request: Paths.AlbumUpdate ->
+        val userUuid = call.sessions.get("userUuid") as String?
 
+        if (userUuid == null) {
+            call.respond(HttpStatusCode.Unauthorized)
+        } else {
+            // Get the album
+            val album = albumRepository.getAlbum(request.albumUuid)
+
+            when {
+                album == null ->  call.respond(HttpStatusCode.NotFound)
+                // Check if the current user can edit the album
+                album.ownerUuid != userUuid && !album.friends.any { it.uuid == userUuid } -> call.respond(HttpStatusCode.Unauthorized)
+                else -> {
+                    val body = call.receive<AlbumUpdateRequest>()
+                    val isSuccessful = albumRepository.updateAlbum(album.uuid, body.title)
+
+                    if(isSuccessful) {
+                        call.respond(HttpStatusCode.OK)
+                    } else {
+                        call.respond(HttpStatusCode.InternalServerError)
+                    }
+                }
+            }
+        }
+    }
+
+    // Delete an album
+    delete { request: Paths.AlbumDelete ->
+        val userUuid = call.sessions.get("userUuid") as String?
+
+        if (userUuid == null) {
+            call.respond(HttpStatusCode.Unauthorized)
+        } else {
+            // Get the album
+            val album = albumRepository.getAlbum(request.albumUuid)
+
+            when {
+                album == null ->  call.respond(HttpStatusCode.NotFound)
+                // Check if the current user can edit the album
+                canEdit(album, userUuid) -> call.respond(HttpStatusCode.Unauthorized)
+                else -> {
+                    val isSuccessful = albumRepository.deleteAlbum(album.uuid)
+
+                    if(isSuccessful) {
+                        call.respond(HttpStatusCode.OK)
+                    } else {
+                        call.respond(HttpStatusCode.InternalServerError)
+                    }
+                }
+            }
+        }
+    }
+
+    // Get albums for the user logged
     get { _: Paths.AlbumsGet ->
         val userUuid = call.sessions.get("userUuid") as String?
 
@@ -86,4 +116,121 @@ fun Route.AlbumApi() {
             call.respond(HttpStatusCode.OK, AlbumsListResponse(albums))
         }
     }
+
+    // Add friends access to the album
+    post { request: Paths.AlbumAccessAdd ->
+        val userUuid = call.sessions.get("userUuid") as String?
+
+        if (userUuid == null) {
+            call.respond(HttpStatusCode.Unauthorized)
+        } else {
+            // Get the album
+            val album = albumRepository.getAlbum(request.albumUuid)
+
+            when {
+                album == null ->  call.respond(HttpStatusCode.NotFound)
+                // Check if the current user can edit the album
+                canEdit(album, userUuid) -> call.respond(HttpStatusCode.Unauthorized)
+                else -> {
+                    val body = call.receive<AlbumAccessAddRequest>()
+                    val isSuccessful = albumRepository.shareWith(album.uuid, body.friends)
+
+                    if(isSuccessful) {
+                        call.respond(HttpStatusCode.OK)
+                    } else {
+                        call.respond(HttpStatusCode.InternalServerError)
+                    }
+                }
+            }
+        }
+    }
+
+    // Remove friend access to the album
+    delete { request: Paths.AlbumAccessDelete ->
+        val userUuid = call.sessions.get("userUuid") as String?
+
+        if (userUuid == null) {
+            call.respond(HttpStatusCode.Unauthorized)
+        } else {
+            // Get the album
+            val album = albumRepository.getAlbum(request.albumUuid)
+
+            when {
+                album == null ->  call.respond(HttpStatusCode.NotFound)
+                // Check if the current user can edit the album
+                album.ownerUuid != userUuid && !album.friends.any { it.uuid == userUuid } -> call.respond(HttpStatusCode.Unauthorized)
+                else -> {
+                    val isSuccessful = albumRepository.removeAccessTo(album.uuid, request.friendUuid)
+
+                    if(isSuccessful) {
+                        call.respond(HttpStatusCode.OK)
+                    } else {
+                        call.respond(HttpStatusCode.InternalServerError)
+                    }
+                }
+            }
+        }
+    }
+
+    // Add images into the album
+    post { request: Paths.AlbumImageAdd ->
+        val userUuid = call.sessions.get("userUuid") as String?
+
+        if (userUuid == null) {
+            call.respond(HttpStatusCode.Unauthorized)
+        } else {
+            // Get the album
+            val album = albumRepository.getAlbum(request.albumUuid)
+
+            when {
+                album == null ->  call.respond(HttpStatusCode.NotFound)
+                // Check if the current user can edit the album
+                canEdit(album, userUuid) -> call.respond(HttpStatusCode.Unauthorized)
+                else -> {
+                    val body = call.receive<AlbumImageAddRequest>()
+                    val isSuccessful = albumRepository.addImages(album.uuid, body.images)
+
+                    if(isSuccessful) {
+                        call.respond(HttpStatusCode.OK)
+                    } else {
+                        call.respond(HttpStatusCode.InternalServerError)
+                    }
+                }
+            }
+        }
+    }
+
+    // Delete an image from the album
+    delete { request: Paths.AlbumImageDelete ->
+        val userUuid = call.sessions.get("userUuid") as String?
+
+        if (userUuid == null) {
+            call.respond(HttpStatusCode.Unauthorized)
+        } else {
+            // Get the album
+            val album = albumRepository.getAlbum(request.albumUuid)
+
+            when {
+                album == null ->  call.respond(HttpStatusCode.NotFound)
+                // Check if the current user can edit the album
+                canEdit(album, userUuid) -> call.respond(HttpStatusCode.Unauthorized)
+                else -> {
+                    val isSuccessful = albumRepository.removeImage(album.uuid, request.imageUuid)
+
+                    if(isSuccessful) {
+                        call.respond(HttpStatusCode.OK)
+                    } else {
+                        call.respond(HttpStatusCode.InternalServerError)
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Check if [album] is editable by [userUuid]
+ */
+fun canEdit(album: Album, userUuid: String): Boolean {
+    return album.ownerUuid != userUuid && !album.friends.any { it.uuid == userUuid }
 }
