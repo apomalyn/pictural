@@ -1,26 +1,27 @@
 
 import 'package:pictural/core/constants/paths.dart';
 import 'package:pictural/core/managers/user_repository.dart';
+import 'package:pictural/core/models/user.dart';
 import 'package:pictural/core/services/navigation_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:pictural/locator.dart';
 
-class LoginViewModel extends BaseViewModel {
+class FriendsViewModel extends FutureViewModel<User> {
 
   final UserRepository _userRepository = locator<UserRepository>();
 
   final NavigationService _navigationService = locator<NavigationService>();
 
-  Future handleStartUp() async {
+  User get user => _userRepository.user;
+
+  @override
+  Future<User> futureToRun() async {
     setBusy(true);
-    final bool loggingSuccessful = await _userRepository.logIn();
-
-    if(loggingSuccessful) {
-      _navigationService.pushNamed(Paths.friends);
-    } else {
-      setBusy(false);
-
-      // TODO toast error
+    if(_userRepository.user == null) {
+      _navigationService.pushReplacementNamed(Paths.login);
     }
+    setBusy(false);
+
+    return _userRepository.user;
   }
 }

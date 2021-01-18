@@ -3,5 +3,16 @@
   "not_found": "Oups! Page not found....",
   "not_found_button": "Return to home page",
 
-  "google_sign_in_button": "Sign in with Google"
+  "google_sign_in_button": "Sign in with Google",
+
+  "greetings": "Welcome {name} !",
+  "@greetings": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "profile_section": "Profile",
+  "friends_section": "Friends",
+  "photos_section": "Photos",
+  "album_section": "Albums"
 }

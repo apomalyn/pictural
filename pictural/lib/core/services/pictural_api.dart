@@ -20,7 +20,6 @@ class PicturalApi {
   /// Login the user
   Future<User> login(String idToken) async {
     try {
-      print(idToken);
       var response = await _client.post(Urls.login,
           body: "idToken=$idToken");
 
@@ -28,7 +27,7 @@ class PicturalApi {
         return User.fromJson(jsonDecode(response.body));
       }
     } catch (e) {
-      print("HEllo - $e.");
+      print(e);
     }
 
     return null;
