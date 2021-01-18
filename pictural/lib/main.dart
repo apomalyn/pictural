@@ -5,6 +5,7 @@ import 'package:pictural/ui/router.dart';
 import 'package:pictural/ui/utils/app_theme.dart';
 import 'package:pictural/ui/views/startup_view.dart';
 
+import 'core/services/navigation_service.dart';
 import 'generated/l10n.dart';
 
 void main() {
@@ -26,6 +27,7 @@ class Pictural extends StatelessWidget {
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
       ],
+      navigatorKey: locator<NavigationService>().navigatorKey,
       supportedLocales: AppIntl.delegate.supportedLocales,
       onGenerateRoute: AppRouter.generateRoute,
       home: StartUpView(),

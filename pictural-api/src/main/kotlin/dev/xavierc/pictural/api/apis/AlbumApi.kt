@@ -27,11 +27,11 @@ import org.kodein.di.ktor.di
 
 @KtorExperimentalLocationsAPI
 fun Route.AlbumApi() {
-
     val albumRepository by di().instance<AlbumRepository>()
 
     // Add an album
     post { _: Paths.AlbumAdd ->
+        call.response.headers.append("Access-Control-Allow-Origin", "*")
         val userUuid = call.sessions.get("userUuid") as String?
 
         if (userUuid == null) {
@@ -52,6 +52,7 @@ fun Route.AlbumApi() {
     // Edit an album
     put { request: Paths.AlbumUpdate ->
         val userUuid = call.sessions.get("userUuid") as String?
+        call.response.headers.append("Access-Control-Allow-Origin", "*")
 
         if (userUuid == null) {
             call.respond(HttpStatusCode.Unauthorized)
@@ -80,6 +81,7 @@ fun Route.AlbumApi() {
     // Delete an album
     delete { request: Paths.AlbumDelete ->
         val userUuid = call.sessions.get("userUuid") as String?
+        call.response.headers.append("Access-Control-Allow-Origin", "*")
 
         if (userUuid == null) {
             call.respond(HttpStatusCode.Unauthorized)
@@ -107,6 +109,7 @@ fun Route.AlbumApi() {
     // Get albums for the user logged
     get { _: Paths.AlbumsGet ->
         val userUuid = call.sessions.get("userUuid") as String?
+        call.response.headers.append("Access-Control-Allow-Origin", "*")
 
         if (userUuid == null) {
             call.respond(HttpStatusCode.Unauthorized)
@@ -120,6 +123,7 @@ fun Route.AlbumApi() {
     // Add friends access to the album
     post { request: Paths.AlbumAccessAdd ->
         val userUuid = call.sessions.get("userUuid") as String?
+        call.response.headers.append("Access-Control-Allow-Origin", "*")
 
         if (userUuid == null) {
             call.respond(HttpStatusCode.Unauthorized)
@@ -148,6 +152,7 @@ fun Route.AlbumApi() {
     // Remove friend access to the album
     delete { request: Paths.AlbumAccessDelete ->
         val userUuid = call.sessions.get("userUuid") as String?
+        call.response.headers.append("Access-Control-Allow-Origin", "*")
 
         if (userUuid == null) {
             call.respond(HttpStatusCode.Unauthorized)
@@ -175,6 +180,7 @@ fun Route.AlbumApi() {
     // Add images into the album
     post { request: Paths.AlbumImageAdd ->
         val userUuid = call.sessions.get("userUuid") as String?
+        call.response.headers.append("Access-Control-Allow-Origin", "*")
 
         if (userUuid == null) {
             call.respond(HttpStatusCode.Unauthorized)
@@ -203,6 +209,7 @@ fun Route.AlbumApi() {
     // Delete an image from the album
     delete { request: Paths.AlbumImageDelete ->
         val userUuid = call.sessions.get("userUuid") as String?
+        call.response.headers.append("Access-Control-Allow-Origin", "*")
 
         if (userUuid == null) {
             call.respond(HttpStatusCode.Unauthorized)

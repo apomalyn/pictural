@@ -7,24 +7,22 @@ class User {
 
   final bool darkModeEnabled;
 
-  final String pictureUuid;
+  String pictureUrl;
 
   User(
       {@required this.uuid,
       @required this.name,
       this.darkModeEnabled,
-      this.pictureUuid});
+      this.pictureUrl});
 
   User.fromJson(Map<String, dynamic> json)
       : uuid = json["uuid"] as String,
         name = json["name"] as String,
-        darkModeEnabled = json["darkModeEnabled"] as bool,
-        pictureUuid = json["pictureUuid"] as String;
+        darkModeEnabled = json["darkModeEnabled"] as bool;
 
   Map<String, dynamic> toJson() => {
     'uuid': uuid,
     'name': name,
-    'darkModeEnabled': darkModeEnabled,
-    'pictureUuid': pictureUuid
+    'darkModeEnabled': darkModeEnabled
   };
 }

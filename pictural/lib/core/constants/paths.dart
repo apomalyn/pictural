@@ -1,5 +1,5 @@
 /// List of the path to access the different views of the app.
-class RouterPaths {
+class Paths {
   static const String login = "/login";
   static const String home = "/home";
   static const String upload = "/upload";

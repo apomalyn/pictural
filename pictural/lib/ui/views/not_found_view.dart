@@ -9,12 +9,16 @@ class NotFoundView extends StatelessWidget {
         body: Center(
           child: Column(
             children: [
+              Text(AppIntl.of(context).app_name.toLowerCase(),
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline1.copyWith(color: AppTheme.bluePic, letterSpacing: 20)),
               Text(AppIntl.of(context).not_found,
                   style: Theme.of(context)
                       .textTheme
                       .headline3
                       .copyWith(color: AppTheme.bluePic)),
-              Spacer(flex: 3),
+              SizedBox(height: 50),
               FlatButton(
                   onPressed: () {},
                   child: Text(

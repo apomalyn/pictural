@@ -16,7 +16,7 @@
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="Share your photos with your friends.">
-  <meta name="google-signin-client_id" content="915871837495-dv95b94hfaba40tv8gs7d6ktlc9ga6dl.apps.googleusercontent.com">
+  <meta name="google-signin-client_id" content="667106226163-i71f9ff3vvjubhtkqdg7ojmtb999vo21.apps.googleusercontent.com">
 
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -29,6 +29,35 @@
 
   <title>pictural</title>
   <link rel="manifest" href="manifest.json">
+
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/8.2.3/firebase-app.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+       https://firebase.google.com/docs/web/setup#available-libraries -->
+  <script src="https://www.gstatic.com/firebasejs/8.2.3/firebase-analytics.js"></script>
+
+  <!-- The core Firebase JS SDK (always required for using any firebase service) -->
+  <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-app.js"></script>
+  <!-- Firebase Auth SDK -->
+  <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-auth.js"></script>
+
+  <script>
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    var firebaseConfig = {
+      apiKey: "AIzaSyBM0RYP9RhkYJ0kb0R981_O3MWL-kPC66k",
+      authDomain: "pictural-d884b.firebaseapp.com",
+      projectId: "pictural-d884b",
+      storageBucket: "pictural-d884b.appspot.com",
+      messagingSenderId: "667106226163",
+      appId: "1:667106226163:web:1c61e3c26c157cd6beec86",
+      measurementId: "G-Y82Y7FZYM5"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+  </script>
 </head>
 <body>
   <!-- This script installs service_worker.js to provide PWA functionality to

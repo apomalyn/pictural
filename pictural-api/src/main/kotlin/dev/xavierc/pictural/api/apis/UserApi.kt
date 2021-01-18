@@ -39,14 +39,13 @@ import org.kodein.di.ktor.di
 
 @KtorExperimentalLocationsAPI
 fun Route.UserApi() {
-    val gson = Gson()
-    val empty = mutableMapOf<String, Any?>()
 
     val userRepository by di().instance<UserRepository>()
 
     // Get the friends list of the user
     get { _: Paths.UserFriendsGet ->
         val userUuid = call.sessions.get("userUuid") as String?
+        call.response.headers.append("Access-Control-Allow-Origin", "*")
 
         if (userUuid == null) {
             call.respond(HttpStatusCode.Unauthorized)
@@ -60,6 +59,7 @@ fun Route.UserApi() {
     // Add friend
     post { request: Paths.UserFriendsAdd ->
         val userUuid = call.sessions.get("userUuid") as String?
+        call.response.headers.append("Access-Control-Allow-Origin", "*")
 
         if (userUuid == null) {
             call.respond(HttpStatusCode.Unauthorized)
@@ -75,6 +75,7 @@ fun Route.UserApi() {
     // Delete a friend
     delete { request: Paths.UserFriendsDelete ->
         val userUuid = call.sessions.get("userUuid") as String?
+        call.response.headers.append("Access-Control-Allow-Origin", "*")
 
         if (userUuid == null) {
             call.respond(HttpStatusCode.Unauthorized)
@@ -90,6 +91,7 @@ fun Route.UserApi() {
     // Get user info
     get { _: Paths.UserInfoGet ->
         val userUuid = call.sessions.get("userUuid") as String?
+        call.response.headers.append("Access-Control-Allow-Origin", "*")
 
         if (userUuid == null) {
             call.respond(HttpStatusCode.Unauthorized)
@@ -106,6 +108,7 @@ fun Route.UserApi() {
     // Update user info
     put { _: Paths.UserInfoUpdate ->
         val userUuid = call.sessions.get("userUuid") as String?
+        call.response.headers.append("Access-Control-Allow-Origin", "*")
 
         if (userUuid == null) {
             call.respond(HttpStatusCode.Unauthorized)
@@ -123,6 +126,7 @@ fun Route.UserApi() {
     // Add user info (create a new user)
     post { _: Paths.UserInfoAdd ->
         val userUuid = call.sessions.get("userUuid") as String?
+        call.response.headers.append("Access-Control-Allow-Origin", "*")
 
         when {
             userUuid == null -> {
@@ -142,34 +146,34 @@ fun Route.UserApi() {
     }
 
     // Login with oauth
-    authenticate("google_oauth2") {
-        post { _: Paths.UserLogin ->
-            val principal = call.authentication.principal<OAuthAccessTokenResponse.OAuth2>() ?: error("No principal")
+    post { _: Paths.UserLogin ->
+        val tokenId = call.receiveText()
+        call.response.headers.append("Access-Control-Allow-Origin", "*")
 
-            val json = HTTP.client.get<Map<String, Any?>>("https://www.googleapis.com/userinfo/v2/me") {
-                header("Authorization", "Bearer ${principal.accessToken}")
-            }
+        /// Validate the token
+        val json = HTTP.client.get<Map<String, Any?>>("https://oauth2.googleapis.com/tokeninfo?id_token=${tokenId.substringAfter("=")}")
 
-            val id = json["id"] as String?
+        val id = json["sub"] as String?
 
-            if (id != null) {
-                val results = userRepository.getUserInfo(id)
-                if (results != null) {
-                    call.sessions.set(results.uuid)
-                    call.respond(HttpStatusCode.OK)
-                } else {
-                    call.sessions.set(id)
-                    call.respond(HttpStatusCode.NotFound)
-                }
+        if (id != null) {
+            val results = userRepository.getUserInfo(id)
+            if (results != null) {
+                call.sessions.set(results.uuid)
+                call.respond(HttpStatusCode.OK, results)
             } else {
-                call.respond(HttpStatusCode.BadRequest)
+                call.sessions.set(id)
+                userRepository.addUserInfo(id, json["name"] as String, null)
+                call.respond(HttpStatusCode.OK, userRepository.getUserInfo(id)!!)
             }
+        } else {
+            call.respond(HttpStatusCode.BadRequest)
         }
     }
 
     // Log out the user
     post { _: Paths.UserLogout ->
         call.sessions.clear("userUuid")
+        call.response.headers.append("Access-Control-Allow-Origin", "*")
         call.respond(HttpStatusCode.OK)
     }
 }

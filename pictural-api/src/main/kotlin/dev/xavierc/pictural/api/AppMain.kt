@@ -86,15 +86,15 @@ fun Application.main() {
             transform(SessionTransportTransformerMessageAuthentication(hex(sessionConfig.property("key").getString())))
         }
     }
-    install(Authentication) {
-        oauth("google_oauth2") {
-            client = HttpClient(Apache)
-            providerLookup = { ApplicationAuthProviders["google_oauth2"] }
-            urlProvider = { _ ->
-            redirectUrl(Paths.UserLogin())
-            }
-        }
-    }
+//    install(Authentication) {
+//        oauth("google_oauth2") {
+//            client = HttpClient(Apache)
+//            providerLookup = { ApplicationAuthProviders["google_oauth2"] }
+//            urlProvider = { _ ->
+//            redirectUrl(Paths.UserLogin())
+//            }
+//        }
+//    }
     install(Routing) {
         AlbumApi()
         ImageApi(imageDir)
