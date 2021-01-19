@@ -13,6 +13,7 @@ import dev.xavierc.pictural.api.apis.AlbumApi
 import dev.xavierc.pictural.api.apis.ImageApi
 import dev.xavierc.pictural.api.apis.UserApi
 import dev.xavierc.pictural.api.models.User
+import dev.xavierc.pictural.api.models.UserSession
 import dev.xavierc.pictural.api.repository.AlbumRepository
 import dev.xavierc.pictural.api.repository.ImageRepository
 import dev.xavierc.pictural.api.repository.UserRepository
@@ -82,7 +83,7 @@ fun Application.main() {
     }
 
     install(Sessions) {
-        cookie<String>("userUuid") {
+        cookie<UserSession>("userUuid") {
             transform(SessionTransportTransformerMessageAuthentication(hex(sessionConfig.property("key").getString())))
         }
     }

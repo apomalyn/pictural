@@ -16,6 +16,7 @@ import io.ktor.routing.route
 import dev.xavierc.pictural.api.Paths
 import dev.xavierc.pictural.api.models.ImageInfo
 import dev.xavierc.pictural.api.models.ImageListResponse
+import dev.xavierc.pictural.api.models.UserSession
 import dev.xavierc.pictural.api.repository.ImageRepository
 import dev.xavierc.pictural.api.repository.UserRepository
 import io.ktor.http.*
@@ -42,10 +43,11 @@ fun Route.ImageApi(imageDir: File) {
 
     // Add access to an image
     post { request: Paths.ImageAccessAdd ->
-        val userUuid = call.sessions.get("userUuid") as String?
-        call.response.headers.append("Access-Control-Allow-Origin", "*")
+        val user = call.sessions.get<UserSession>()
+        call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
+        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
-        if (userUuid == null) {
+        if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
             val imageInfo: ImageInfo? = imageRepository.getImageInfo(request.imageUuid)
@@ -53,7 +55,7 @@ fun Route.ImageApi(imageDir: File) {
             // Check if the image exist and the friend is a friend
             if (imageInfo == null) {
                 call.respond(HttpStatusCode.NotFound)
-            } else if (!userRepository.isFriend(userUuid, request.friendUuid) || imageInfo.ownerUuid != userUuid) {
+            } else if (!userRepository.isFriend(user.uid, request.friendUuid) || imageInfo.ownerUuid != user.uid) {
                 // 'Friend' is not a friend OR not the owner of the image
                 call.respond(HttpStatusCode.Unauthorized)
             } else if (imageRepository.shareImageWith(request.imageUuid, request.friendUuid)) {
@@ -67,10 +69,11 @@ fun Route.ImageApi(imageDir: File) {
 
     // Remove access to an image
     delete { request: Paths.ImageAccessDelete ->
-        val userUuid = call.sessions.get("userUuid") as String?
-        call.response.headers.append("Access-Control-Allow-Origin", "*")
+        val user = call.sessions.get<UserSession>()
+        call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
+        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
-        if (userUuid == null) {
+        if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
             val imageInfo: ImageInfo? = imageRepository.getImageInfo(request.imageUuid)
@@ -80,7 +83,7 @@ fun Route.ImageApi(imageDir: File) {
                 imageInfo == null -> {
                     call.respond(HttpStatusCode.NotFound)
                 }
-                imageInfo.ownerUuid != userUuid -> {
+                imageInfo.ownerUuid != user.uid -> {
                     // Not the owner of the image
                     call.respond(HttpStatusCode.Unauthorized)
                 }
@@ -97,10 +100,11 @@ fun Route.ImageApi(imageDir: File) {
 
     // Delete an image
     delete { request: Paths.ImageDelete ->
-        val userUuid = call.sessions.get("userUuid") as String?
-        call.response.headers.append("Access-Control-Allow-Origin", "*")
+        val user = call.sessions.get<UserSession>()
+        call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
+        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
-        if (userUuid == null) {
+        if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
             val imageInfo: ImageInfo? = imageRepository.getImageInfo(request.imageUuid)
@@ -110,7 +114,7 @@ fun Route.ImageApi(imageDir: File) {
                 imageInfo == null -> {
                     call.respond(HttpStatusCode.NotFound)
                 }
-                imageInfo.ownerUuid != userUuid -> {
+                imageInfo.ownerUuid != user.uid -> {
                     // 'Friend' is not a friend OR not the owner of the image
                     call.respond(HttpStatusCode.Unauthorized)
                 }
@@ -125,17 +129,18 @@ fun Route.ImageApi(imageDir: File) {
 
     // Get an image
     get { request: Paths.ImageGet ->
-        val userUuid = call.sessions.get("userUuid") as String?
-        call.response.headers.append("Access-Control-Allow-Origin", "*")
+        val user = call.sessions.get<UserSession>()
+        call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
+        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
-        if (userUuid == null) {
+        if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
             val imageInfo = imageRepository.getImageInfo(request.imageUuid)
 
             when {
                 imageInfo == null -> call.respond(HttpStatusCode.NotFound)
-                (!imageInfo.authorized.contains(userUuid) && imageInfo.ownerUuid != userUuid) -> {
+                (!imageInfo.authorized.contains(user.uid) && imageInfo.ownerUuid != user.uid) -> {
                     // Not the owner or one of the authorized users
                     call.respond(HttpStatusCode.Unauthorized)
                 }
@@ -148,17 +153,18 @@ fun Route.ImageApi(imageDir: File) {
 
     // Get the info of an image
     get { request: Paths.ImageInfoGet ->
-        val userUuid = call.sessions.get("userUuid") as String?
-        call.response.headers.append("Access-Control-Allow-Origin", "*")
+        val user = call.sessions.get<UserSession>()
+        call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
+        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
-        if (userUuid == null) {
+        if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
             val imageInfo = imageRepository.getImageInfo(request.imageUuid)
 
             when {
                 imageInfo == null -> call.respond(HttpStatusCode.NotFound)
-                (!imageInfo.authorized.contains(userUuid) && imageInfo.ownerUuid != userUuid) -> {
+                (!imageInfo.authorized.contains(user.uid) && imageInfo.ownerUuid != user.uid) -> {
                     // Not the owner or one of the authorized users
                     call.respond(HttpStatusCode.Unauthorized)
                 }
@@ -169,10 +175,11 @@ fun Route.ImageApi(imageDir: File) {
 
     // Upload of an image
     post { _: Paths.ImageUpload ->
-        val userUuid = call.sessions.get("userUuid") as String?
-        call.response.headers.append("Access-Control-Allow-Origin", "*")
+        val user = call.sessions.get<UserSession>()
+        call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
+        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
-        if (userUuid == null) {
+        if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
             var imageUuid: UUID? = null
@@ -181,7 +188,7 @@ fun Route.ImageApi(imageDir: File) {
                 when (part) {
                     is PartData.FileItem -> {
                         val ext = File(part.originalFileName).extension
-                        imageUuid = imageRepository.addImageInfo(userUuid, ext)
+                        imageUuid = imageRepository.addImageInfo(user.uid, ext)
                         val file = File(imageDir, "${imageUuid}.$ext")
                         part.streamProvider().use { input -> file.outputStream().buffered().use { output -> input.copyToSuspend(output) } }
                     }
@@ -197,13 +204,14 @@ fun Route.ImageApi(imageDir: File) {
 
     // Get the images for the user.
     get { _: Paths.ImagesGet ->
-        val userUuid = call.sessions.get("userUuid") as String?
-        call.response.headers.append("Access-Control-Allow-Origin", "*")
+        val user = call.sessions.get<UserSession>()
+        call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
+        call.response.headers.append("Access-Control-Allow-Credentials", "true");
 
-        if (userUuid == null) {
+        if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
-            call.respond(HttpStatusCode.OK, ImageListResponse(imageRepository.getImagesByUser(userUuid)))
+            call.respond(HttpStatusCode.OK, ImageListResponse(imageRepository.getImagesByUser(user.uid)))
         }
     }
 }

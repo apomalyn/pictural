@@ -31,15 +31,16 @@ fun Route.AlbumApi() {
 
     // Add an album
     post { _: Paths.AlbumAdd ->
-        call.response.headers.append("Access-Control-Allow-Origin", "*")
-        val userUuid = call.sessions.get("userUuid") as String?
+                call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
+        call.response.headers.append("Access-Control-Allow-Credentials", "true")
+        val user = call.sessions.get<UserSession>()
 
-        if (userUuid == null) {
+        if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
             val req = call.receive<AlbumAddRequest>()
 
-            val albumUuid = albumRepository.addAlbum(userUuid, req.title, req.images, req.friends)
+            val albumUuid = albumRepository.addAlbum(user.uid, req.title, req.images, req.friends)
 
             if(albumUuid != null) {
                 call.respond(HttpStatusCode.Created, albumUuid)
@@ -51,10 +52,11 @@ fun Route.AlbumApi() {
 
     // Edit an album
     put { request: Paths.AlbumUpdate ->
-        val userUuid = call.sessions.get("userUuid") as String?
-        call.response.headers.append("Access-Control-Allow-Origin", "*")
+        val user = call.sessions.get<UserSession>()
+                call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
+        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
-        if (userUuid == null) {
+        if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
             // Get the album
@@ -63,7 +65,7 @@ fun Route.AlbumApi() {
             when {
                 album == null ->  call.respond(HttpStatusCode.NotFound)
                 // Check if the current user can edit the album
-                album.ownerUuid != userUuid && !album.friends.any { it.uuid == userUuid } -> call.respond(HttpStatusCode.Unauthorized)
+                album.ownerUuid != user.uid && !album.friends.any { it.uuid == user.uid } -> call.respond(HttpStatusCode.Unauthorized)
                 else -> {
                     val body = call.receive<AlbumUpdateRequest>()
                     val isSuccessful = albumRepository.updateAlbum(album.uuid, body.title)
@@ -80,10 +82,11 @@ fun Route.AlbumApi() {
 
     // Delete an album
     delete { request: Paths.AlbumDelete ->
-        val userUuid = call.sessions.get("userUuid") as String?
-        call.response.headers.append("Access-Control-Allow-Origin", "*")
+        val user = call.sessions.get<UserSession>()
+                call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
+        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
-        if (userUuid == null) {
+        if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
             // Get the album
@@ -92,7 +95,7 @@ fun Route.AlbumApi() {
             when {
                 album == null ->  call.respond(HttpStatusCode.NotFound)
                 // Check if the current user can edit the album
-                canEdit(album, userUuid) -> call.respond(HttpStatusCode.Unauthorized)
+                canEdit(album, user.uid) -> call.respond(HttpStatusCode.Unauthorized)
                 else -> {
                     val isSuccessful = albumRepository.deleteAlbum(album.uuid)
 
@@ -108,13 +111,14 @@ fun Route.AlbumApi() {
 
     // Get albums for the user logged
     get { _: Paths.AlbumsGet ->
-        val userUuid = call.sessions.get("userUuid") as String?
-        call.response.headers.append("Access-Control-Allow-Origin", "*")
+        val user = call.sessions.get<UserSession>()
+                call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
+        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
-        if (userUuid == null) {
+        if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
-            val albums = albumRepository.getAlbums(userUuid)
+            val albums = albumRepository.getAlbums(user.uid)
 
             call.respond(HttpStatusCode.OK, AlbumsListResponse(albums))
         }
@@ -122,10 +126,11 @@ fun Route.AlbumApi() {
 
     // Add friends access to the album
     post { request: Paths.AlbumAccessAdd ->
-        val userUuid = call.sessions.get("userUuid") as String?
-        call.response.headers.append("Access-Control-Allow-Origin", "*")
+        val user = call.sessions.get<UserSession>()
+                call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
+        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
-        if (userUuid == null) {
+        if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
             // Get the album
@@ -134,7 +139,7 @@ fun Route.AlbumApi() {
             when {
                 album == null ->  call.respond(HttpStatusCode.NotFound)
                 // Check if the current user can edit the album
-                canEdit(album, userUuid) -> call.respond(HttpStatusCode.Unauthorized)
+                canEdit(album, user.uid) -> call.respond(HttpStatusCode.Unauthorized)
                 else -> {
                     val body = call.receive<AlbumAccessAddRequest>()
                     val isSuccessful = albumRepository.shareWith(album.uuid, body.friends)
@@ -151,10 +156,11 @@ fun Route.AlbumApi() {
 
     // Remove friend access to the album
     delete { request: Paths.AlbumAccessDelete ->
-        val userUuid = call.sessions.get("userUuid") as String?
-        call.response.headers.append("Access-Control-Allow-Origin", "*")
+        val user = call.sessions.get<UserSession>()
+                call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
+        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
-        if (userUuid == null) {
+        if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
             // Get the album
@@ -163,7 +169,7 @@ fun Route.AlbumApi() {
             when {
                 album == null ->  call.respond(HttpStatusCode.NotFound)
                 // Check if the current user can edit the album
-                album.ownerUuid != userUuid && !album.friends.any { it.uuid == userUuid } -> call.respond(HttpStatusCode.Unauthorized)
+                album.ownerUuid != user.uid && !album.friends.any { it.uuid == user.uid } -> call.respond(HttpStatusCode.Unauthorized)
                 else -> {
                     val isSuccessful = albumRepository.removeAccessTo(album.uuid, request.friendUuid)
 
@@ -179,10 +185,11 @@ fun Route.AlbumApi() {
 
     // Add images into the album
     post { request: Paths.AlbumImageAdd ->
-        val userUuid = call.sessions.get("userUuid") as String?
-        call.response.headers.append("Access-Control-Allow-Origin", "*")
+        val user = call.sessions.get<UserSession>()
+                call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
+        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
-        if (userUuid == null) {
+        if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
             // Get the album
@@ -191,7 +198,7 @@ fun Route.AlbumApi() {
             when {
                 album == null ->  call.respond(HttpStatusCode.NotFound)
                 // Check if the current user can edit the album
-                canEdit(album, userUuid) -> call.respond(HttpStatusCode.Unauthorized)
+                canEdit(album, user.uid) -> call.respond(HttpStatusCode.Unauthorized)
                 else -> {
                     val body = call.receive<AlbumImageAddRequest>()
                     val isSuccessful = albumRepository.addImages(album.uuid, body.images)
@@ -208,10 +215,11 @@ fun Route.AlbumApi() {
 
     // Delete an image from the album
     delete { request: Paths.AlbumImageDelete ->
-        val userUuid = call.sessions.get("userUuid") as String?
-        call.response.headers.append("Access-Control-Allow-Origin", "*")
+        val user = call.sessions.get<UserSession>()
+                call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
+        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
-        if (userUuid == null) {
+        if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
             // Get the album
@@ -220,7 +228,7 @@ fun Route.AlbumApi() {
             when {
                 album == null ->  call.respond(HttpStatusCode.NotFound)
                 // Check if the current user can edit the album
-                canEdit(album, userUuid) -> call.respond(HttpStatusCode.Unauthorized)
+                canEdit(album, user.uid) -> call.respond(HttpStatusCode.Unauthorized)
                 else -> {
                     val isSuccessful = albumRepository.removeImage(album.uuid, request.imageUuid)
 

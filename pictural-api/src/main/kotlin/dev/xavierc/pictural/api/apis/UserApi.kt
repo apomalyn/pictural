@@ -26,6 +26,7 @@ import io.ktor.routing.route
 import dev.xavierc.pictural.api.Paths
 import dev.xavierc.pictural.api.models.FriendsListResponse
 import dev.xavierc.pictural.api.models.UserAddRequest
+import dev.xavierc.pictural.api.models.UserSession
 import dev.xavierc.pictural.api.models.UserUpdateRequest
 import dev.xavierc.pictural.api.repository.UserRepository
 
@@ -44,13 +45,14 @@ fun Route.UserApi() {
 
     // Get the friends list of the user
     get { _: Paths.UserFriendsGet ->
-        val userUuid = call.sessions.get("userUuid") as String?
-        call.response.headers.append("Access-Control-Allow-Origin", "*")
+        val user = call.sessions.get<UserSession>()
+        call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
+        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
-        if (userUuid == null) {
+        if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
-            val friendsList = userRepository.getFriendsList(userUuid)
+            val friendsList = userRepository.getFriendsList(user.uid)
 
             call.respond(HttpStatusCode.OK, FriendsListResponse(friendsList))
         }
@@ -58,13 +60,14 @@ fun Route.UserApi() {
 
     // Add friend
     post { request: Paths.UserFriendsAdd ->
-        val userUuid = call.sessions.get("userUuid") as String?
-        call.response.headers.append("Access-Control-Allow-Origin", "*")
+        val user = call.sessions.get<UserSession>()
+        call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
+        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
-        if (userUuid == null) {
+        if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
-            if (userRepository.addFriend(userUuid, request.friendUuid)) {
+            if (userRepository.addFriend(user.uid, request.friendUuid)) {
                 call.respond(HttpStatusCode.OK)
             } else {
                 call.respond(HttpStatusCode.NotFound)
@@ -74,13 +77,14 @@ fun Route.UserApi() {
 
     // Delete a friend
     delete { request: Paths.UserFriendsDelete ->
-        val userUuid = call.sessions.get("userUuid") as String?
-        call.response.headers.append("Access-Control-Allow-Origin", "*")
+        val user = call.sessions.get<UserSession>()
+        call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
+        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
-        if (userUuid == null) {
+        if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
-            if (userRepository.deleteFriend(userUuid, request.friendUuid)) {
+            if (userRepository.deleteFriend(user.uid, request.friendUuid)) {
                 call.respond(HttpStatusCode.OK)
             } else {
                 call.respond(HttpStatusCode.NotFound)
@@ -90,10 +94,11 @@ fun Route.UserApi() {
 
     // Get user info
     get { _: Paths.UserInfoGet ->
-        val userUuid = call.sessions.get("userUuid") as String?
-        call.response.headers.append("Access-Control-Allow-Origin", "*")
+        val user = call.sessions.get<UserSession>()
+        call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
+        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
-        if (userUuid == null) {
+        if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
             val results = userRepository.getUserInfo("tet")
@@ -107,39 +112,39 @@ fun Route.UserApi() {
 
     // Update user info
     put { _: Paths.UserInfoUpdate ->
-        val userUuid = call.sessions.get("userUuid") as String?
-        call.response.headers.append("Access-Control-Allow-Origin", "*")
+        val user = call.sessions.get<UserSession>()
+        call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
+        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
-        if (userUuid == null) {
+        if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
         } else {
             val request = call.receive<UserUpdateRequest>()
 
-            userRepository.updateUserInfo(userUuid, request.name, request.darkModeEnabled, request.pictureUuid)
+            userRepository.updateUserInfo(user.uid, request.name, request.darkModeEnabled, request.pictureUuid)
 
-            // Update the session
-            call.sessions.set(userRepository.getUserInfo(userUuid))
             call.respond(HttpStatusCode.OK)
         }
     }
 
     // Add user info (create a new user)
     post { _: Paths.UserInfoAdd ->
-        val userUuid = call.sessions.get("userUuid") as String?
-        call.response.headers.append("Access-Control-Allow-Origin", "*")
+        val user = call.sessions.get<UserSession>()
+        call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
+        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
         when {
-            userUuid == null -> {
+            user == null -> {
                 call.respond(HttpStatusCode.OK)
             }
-            userRepository.getUserInfo(userUuid) != null -> {
+            userRepository.getUserInfo(user.uid) != null -> {
                 // User already exists
                 call.respond(HttpStatusCode.Conflict)
             }
             else -> {
                 val request = call.receive<UserAddRequest>()
 
-                userRepository.addUserInfo(userUuid, request.name, request.pictureUuid)
+                userRepository.addUserInfo(user.uid, request.name, request.pictureUuid)
                 call.respond(HttpStatusCode.Created)
             }
         }
@@ -148,20 +153,23 @@ fun Route.UserApi() {
     // Login with oauth
     post { _: Paths.UserLogin ->
         val tokenId = call.receiveText()
-        call.response.headers.append("Access-Control-Allow-Origin", "*")
+        call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
+        call.response.headers.append("Access-Control-Allow-Credentials", "true");
+
 
         /// Validate the token
         val json = HTTP.client.get<Map<String, Any?>>("https://oauth2.googleapis.com/tokeninfo?id_token=${tokenId.substringAfter("=")}")
 
         val id = json["sub"] as String?
+//        val id = "112920064076876960843"
 
         if (id != null) {
             val results = userRepository.getUserInfo(id)
             if (results != null) {
-                call.sessions.set(results.uuid)
+                call.sessions.set(UserSession(results.uuid))
                 call.respond(HttpStatusCode.OK, results)
             } else {
-                call.sessions.set(id)
+                call.sessions.set(UserSession(id))
                 userRepository.addUserInfo(id, json["name"] as String, null)
                 call.respond(HttpStatusCode.OK, userRepository.getUserInfo(id)!!)
             }
@@ -173,7 +181,8 @@ fun Route.UserApi() {
     // Log out the user
     post { _: Paths.UserLogout ->
         call.sessions.clear("userUuid")
-        call.response.headers.append("Access-Control-Allow-Origin", "*")
+        call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
+        call.response.headers.append("Access-Control-Allow-Credentials", "true")
         call.respond(HttpStatusCode.OK)
     }
 }
