@@ -1,0 +1,1222 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Pictural API",
+    "description": "This API is part of my project for the Shopify Developer intern challenge. This API manage the users, pictures and links between accounts of Pictural.",
+    "version": "0.1.0",
+    "contact": {
+      "email": "chretienxavier42@gmail.com",
+      "name": "Xavier Chrétien",
+      "url": "https://xavierc.dev"
+    }
+  },
+  "tags": [
+    {
+      "name": "user",
+      "description": "From login to sign up and passing by the user parameter"
+    },
+    {
+      "name": "image",
+      "description": "Every interaction with an image, that can be to add, modify access, delete an image..."
+    },
+    {
+      "name": "album",
+      "description": "Every interaction with an album"
+    }
+  ],
+  "servers": [
+    {
+      "url": "/0.1"
+    }
+  ],
+  "paths": {
+    "/user": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get the information of the user.",
+        "description": "Will return the user information which include his name, his list of friends and if the dark mode is activated",
+        "security": [
+          {
+            "pictural_auth": []
+          }
+        ],
+        "operationId": "user_info_get",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Update the information of the user",
+        "security": [
+          {
+            "pictural_auth": []
+          }
+        ],
+        "operationId": "user_info_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 128,
+                    "description": "Updated name of the user",
+                    "example": "Xavier Chrétien"
+                  },
+                  "dark_mode_enabled": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "If the dark mode is enabled for the UI"
+                  },
+                  "pictureUuid": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "Updated uuid of the profile picture"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The user information had been updated"
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "401": {
+            "description": "Unauthorized user"
+          },
+          "5XX": {
+            "description": "Something went wrong"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Create a new user.",
+        "operationId": "user_signup",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 128,
+                    "description": "Name of the user",
+                    "example": "Xavier Chrétien"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created"
+          },
+          "400": {
+            "description": "Invalid body"
+          },
+          "409": {
+            "description": "User already exists"
+          }
+        }
+      }
+    },
+    "/user/login": {
+      "post": {
+        "summary": "Log in the user",
+        "tags": [
+          "user"
+        ],
+        "operationId": "user_login",
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Authentification failed"
+          },
+          "5XX": {
+            "description": "Something went wrong"
+          }
+        }
+      }
+    },
+    "/user/logout": {
+      "post": {
+        "summary": "Log out the user",
+        "tags": [
+          "user"
+        ],
+        "operationId": "user_logout",
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "404": {
+            "description": "User not logged in"
+          },
+          "5XX": {
+            "description": "Something went wrong"
+          }
+        }
+      }
+    },
+    "/user/friends": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get the list of friend for this user.",
+        "security": [
+          {
+            "pictural_auth": []
+          }
+        ],
+        "operationId": "user_friends_get",
+        "responses": {
+          "200": {
+            "description": "List of friends of this user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "friends": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Friend"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "5XX": {
+            "description": "Something went wrong"
+          }
+        }
+      }
+    },
+    "/user/friends/{friendUuid}": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Add a friend",
+        "parameters": [
+          {
+            "name": "friendUuid",
+            "in": "path",
+            "description": "UUID of the friend to add",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "pictural_auth": []
+          }
+        ],
+        "operationId": "user_friends_post",
+        "responses": {
+          "200": {
+            "description": "The friend has been added"
+          },
+          "400": {
+            "description": "Friend UUID invalid"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Friend not found"
+          },
+          "5XX": {
+            "description": "Something went wrong"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Remove a friend from the list",
+        "parameters": [
+          {
+            "name": "friendUuid",
+            "in": "path",
+            "description": "UUID of the friend to remove",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "pictural_auth": []
+          }
+        ],
+        "operationId": "user_friends_delete",
+        "responses": {
+          "200": {
+            "description": "The friend has been removed"
+          },
+          "400": {
+            "description": "Friend UUID invalid"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Friend not found"
+          },
+          "5XX": {
+            "description": "Something went wrong"
+          }
+        }
+      }
+    },
+    "/image/{imageUuid}": {
+      "get": {
+        "summary": "Get an image",
+        "tags": [
+          "image"
+        ],
+        "security": [
+          {
+            "pictural_auth": []
+          }
+        ],
+        "operationId": "image_get",
+        "parameters": [
+          {
+            "name": "imageUuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Image asked",
+            "content": {
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Image UUID not valid"
+          },
+          "401": {
+            "description": "Unauthorized, either there is no user logged or the image isn't shared with the user."
+          },
+          "404": {
+            "description": "Image not found"
+          },
+          "5XX": {
+            "description": "Something went wrong"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an image",
+        "tags": [
+          "image"
+        ],
+        "security": [
+          {
+            "pictural_auth": []
+          }
+        ],
+        "operationId": "image_delete",
+        "parameters": [
+          {
+            "name": "imageUuid",
+            "description": "UUID of the image to delete",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Image deleted",
+            "content": {
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Image UUID not valid"
+          },
+          "401": {
+            "description": "Unauthorized, either there is no user logged or the image isn't shared with the user."
+          },
+          "404": {
+            "description": "Image not found"
+          },
+          "5XX": {
+            "description": "Something went wrong"
+          }
+        }
+      }
+    },
+    "/image/{imageUuid}/{friendUuid}": {
+      "post": {
+        "summary": "Share the image with a friend",
+        "tags": [
+          "image"
+        ],
+        "security": [
+          {
+            "pictural_auth": []
+          }
+        ],
+        "operationId": "image_access_add",
+        "parameters": [
+          {
+            "name": "imageUuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "friendUuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Image shared with friend"
+          },
+          "400": {
+            "description": "Image UUID or Friend UUID are invalid"
+          },
+          "401": {
+            "description": "Unauthorized, either the image isn't your property or the friend isn't your friend!"
+          },
+          "404": {
+            "description": "Image not found"
+          },
+          "5XX": {
+            "description": "Something went wrong"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove friend access to an image",
+        "tags": [
+          "image"
+        ],
+        "security": [
+          {
+            "pictural_auth": []
+          }
+        ],
+        "operationId": "image_access_delete",
+        "parameters": [
+          {
+            "name": "imageUuid",
+            "description": "UUID of the image",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "friendUuid",
+            "description": "UUID of the friend to remove access",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Friend access removed"
+          },
+          "400": {
+            "description": "Image UUID or Friend UUID are invalid"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Image or friend not found"
+          },
+          "5XX": {
+            "description": "Something went wrong"
+          }
+        }
+      }
+    },
+    "/image/upload": {
+      "post": {
+        "summary": "Upload an image",
+        "tags": [
+          "image"
+        ],
+        "security": [
+          {
+            "pictural_auth": []
+          }
+        ],
+        "operationId": "image_upload",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "description": "file to upload",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Image uploaded. Return the UUID of the uploaded image.",
+            "content": {
+              "text": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid",
+                  "title": "imageUuid"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "5XX": {
+            "description": "Something went wrong"
+          }
+        }
+      }
+    },
+    "/image/{imageUuid}/info": {
+      "get": {
+        "summary": "Get the information of an image",
+        "tags": [
+          "image"
+        ],
+        "security": [
+          {
+            "pictural_auth": []
+          }
+        ],
+        "operationId": "image_info_get",
+        "parameters": [
+          {
+            "name": "imageUuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Image asked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageInfo"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Image UUID not valid"
+          },
+          "401": {
+            "description": "Unauthorized, either there is no user logged or the image isn't shared with the user."
+          },
+          "404": {
+            "description": "Image not found"
+          },
+          "5XX": {
+            "description": "Something went wrong"
+          }
+        }
+      }
+    },
+    "/images": {
+      "get": {
+        "summary": "Get the list of images info of the current user",
+        "tags": [
+          "image"
+        ],
+        "security": [
+          {
+            "pictural_auth": []
+          }
+        ],
+        "operationId": "images_get",
+        "responses": {
+          "200": {
+            "description": "List of the images info owned/shared with this user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "images": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ImageInfo"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "5XX": {
+            "description": "Something went wrong"
+          }
+        }
+      }
+    },
+    "/albums": {
+      "get": {
+        "summary": "Get the list of albums of the current user",
+        "tags": [
+          "album"
+        ],
+        "security": [
+          {
+            "pictural_auth": []
+          }
+        ],
+        "operationId": "albums_get",
+        "responses": {
+          "200": {
+            "description": "List of the album owned/shared with this user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "albums": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Album"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "5XX": {
+            "description": "Something went wrong"
+          }
+        }
+      }
+    },
+    "/album": {
+      "post": {
+        "summary": "Add an new album",
+        "tags": [
+          "album"
+        ],
+        "security": [
+          {
+            "pictural_auth": []
+          }
+        ],
+        "operationId": "album_add",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Title of the album"
+                  },
+                  "images": {
+                    "description": "Images of this album",
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid",
+                      "title": "imageUuid"
+                    }
+                  },
+                  "friends": {
+                    "description": "List of the friend that can access this album",
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid",
+                      "title": "friendUuid"
+                    }
+                  }
+                },
+                "required": [
+                  "title",
+                  "images",
+                  "friends"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Album created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid",
+                  "title": "albumUuid",
+                  "description": "UUID of the created album"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid body"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "5XX": {
+            "description": "Something went wrong"
+          }
+        }
+      }
+    },
+    "/album/{albumUuid}": {
+      "put": {
+        "summary": "Update an existing album",
+        "tags": [
+          "album"
+        ],
+        "parameters": [
+          {
+            "name": "albumUuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "pictural_auth": []
+          }
+        ],
+        "operationId": "album_update",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Title of the album"
+                  }
+                },
+                "required": [
+                  "title"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Album updated"
+          },
+          "400": {
+            "description": "Invalid body"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "5XX": {
+            "description": "Something went wrong"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an existing album",
+        "tags": [
+          "album"
+        ],
+        "parameters": [
+          {
+            "name": "albumUuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "pictural_auth": []
+          }
+        ],
+        "operationId": "album_delete",
+        "responses": {
+          "200": {
+            "description": "Album deleted"
+          },
+          "400": {
+            "description": "Invalid body"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "5XX": {
+            "description": "Something went wrong"
+          }
+        }
+      }
+    },
+    "/album/{albumUuid}/friend": {
+      "post": {
+        "summary": "Give access to the album at some friends",
+        "tags": [
+          "album"
+        ],
+        "parameters": [
+          {
+            "name": "albumUuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "pictural_auth": []
+          }
+        ],
+        "operationId": "album_access_add",
+        "requestBody": {
+          "description": "List of friends UUID to share the album with.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "friends": {
+                    "type": "array",
+                    "description": "List of friends to add access",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid",
+                      "title": "friendUuid"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Album access added"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Album not found"
+          },
+          "5XX": {
+            "description": "Something went wrong"
+          }
+        }
+      }
+    },
+    "/album/{albumUuid}/friend/{friendUuid}": {
+      "delete": {
+        "summary": "Remove a friend access to the album",
+        "tags": [
+          "album"
+        ],
+        "parameters": [
+          {
+            "name": "albumUuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "friendUuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "pictural_auth": []
+          }
+        ],
+        "operationId": "album_access_delete",
+        "responses": {
+          "200": {
+            "description": "Album access deleted"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Album not found"
+          },
+          "5XX": {
+            "description": "Something went wrong"
+          }
+        }
+      }
+    },
+    "/album/{albumUuid}/image": {
+      "post": {
+        "summary": "Add some images in the album",
+        "tags": [
+          "album"
+        ],
+        "parameters": [
+          {
+            "name": "albumUuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "pictural_auth": []
+          }
+        ],
+        "operationId": "album_images_add",
+        "requestBody": {
+          "description": "List of image UUID to add into the album.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "images": {
+                    "description": "List of the image to add.",
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid",
+                      "title": "imageUuid"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Images added in the album"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Album or image not found"
+          },
+          "5XX": {
+            "description": "Something went wrong"
+          }
+        }
+      }
+    },
+    "/album/{albumUuid}/image/{imageUuid}": {
+      "delete": {
+        "summary": "Remove an image of the album",
+        "tags": [
+          "album"
+        ],
+        "parameters": [
+          {
+            "name": "albumUuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "imageUuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "pictural_auth": []
+          }
+        ],
+        "operationId": "album_image_delete",
+        "responses": {
+          "200": {
+            "description": "Image removed from the album"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Album or image not found"
+          },
+          "5XX": {
+            "description": "Something went wrong"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "pictural_auth": {
+        "type": "oauth2",
+        "flows": {
+          "implicit": {
+            "authorizationUrl": "https://accounts.google.com/o/oauth2/v2/auth",
+            "scopes": {
+              "profile": "Your Google profile."
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the user"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 128,
+            "description": "Name of the user",
+            "example": "Xavier Chrétien"
+          },
+          "darkModeEnabled": {
+            "type": "boolean",
+            "default": false,
+            "description": "If the dark mode is enabled for the UI"
+          },
+          "pictureUuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Uuid of the profile picture of the user"
+          }
+        },
+        "required": [
+          "uuid",
+          "name"
+        ]
+      },
+      "Friend": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the friend"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 128,
+            "description": "Name of the user",
+            "example": "Xavier Chrétien"
+          },
+          "pictureUuid": {
+            "type": "string",
+            "description": "Uuid of the picture of the friend"
+          }
+        },
+        "required": [
+          "uuid",
+          "name"
+        ]
+      },
+      "ImageInfo": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "description": "UUID of the image",
+            "type": "string",
+            "format": "uuid"
+          },
+          "ownerUuid": {
+            "description": "UUID of the owner of the image",
+            "type": "string",
+            "format": "uuid"
+          },
+          "authorized": {
+            "description": "List of UUID. Each UUID correspond to someone who has access at this image.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "required": [
+          "uuid",
+          "ownerUuid",
+          "authorized"
+        ]
+      },
+      "Album": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the album"
+          },
+          "ownerUuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the owner"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title of the album"
+          },
+          "images": {
+            "description": "Images of this album",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Image UUID"
+            }
+          },
+          "friends": {
+            "description": "List of the friend that can access this album",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Friend"
+            }
+          }
+        },
+        "required": [
+          "uuid",
+          "title",
+          "images",
+          "friends"
+        ]
+      }
+    }
+  }
+}
