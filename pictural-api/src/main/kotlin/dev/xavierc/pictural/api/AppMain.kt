@@ -1,6 +1,7 @@
 package dev.xavierc.pictural.api
 
 import com.codahale.metrics.Slf4jReporter
+import com.google.gson.GsonBuilder
 import com.typesafe.config.ConfigFactory
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
@@ -41,7 +42,7 @@ internal val settings = HoconApplicationConfig(ConfigFactory.defaultApplication(
 object HTTP {
     val client = HttpClient(Apache) {
         install(JsonFeature) {
-            serializer = JacksonSerializer()
+            serializer = GsonSerializer()
         }
     }
 }

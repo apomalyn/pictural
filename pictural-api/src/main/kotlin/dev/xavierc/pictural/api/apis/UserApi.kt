@@ -11,17 +11,15 @@
  */
 package dev.xavierc.pictural.api.apis
 
-import com.google.gson.Gson
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier
+import com.google.api.client.http.HttpTransport
+import com.google.api.client.http.apache.v2.ApacheHttpTransport
+import com.google.api.client.json.gson.GsonFactory
 import dev.xavierc.pictural.api.HTTP
 import io.ktor.application.call
-import io.ktor.auth.authentication
-import io.ktor.auth.authenticate
-import io.ktor.auth.OAuthAccessTokenResponse
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.routing.Route
-import io.ktor.routing.post
-import io.ktor.routing.route
 
 import dev.xavierc.pictural.api.Paths
 import dev.xavierc.pictural.api.models.FriendsListResponse
@@ -32,16 +30,25 @@ import dev.xavierc.pictural.api.repository.UserRepository
 
 
 import io.ktor.client.request.*
+import io.ktor.features.*
 import io.ktor.locations.*
 import io.ktor.request.*
 import io.ktor.sessions.*
 import org.kodein.di.instance
 import org.kodein.di.ktor.di
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken
+import dev.xavierc.pictural.api.settings
+import io.ktor.util.*
 
+@KtorExperimentalAPI
 @KtorExperimentalLocationsAPI
 fun Route.UserApi() {
 
     val userRepository by di().instance<UserRepository>()
+
+    val verifier = GoogleIdTokenVerifier.Builder(ApacheHttpTransport(), GsonFactory())
+        .setAudience(listOf(settings.property("auth.oauth.google_oauth2.clientId").getString()))
+        .build()
 
     // Get the friends list of the user
     get { _: Paths.UserFriendsGet ->
@@ -152,11 +159,31 @@ fun Route.UserApi() {
 
     // Login with oauth
     post { _: Paths.UserLogin ->
-        val tokenId = call.receiveText()
+        val tokenId = call.receiveText().substringAfter("=")
         call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
         call.response.headers.append("Access-Control-Allow-Credentials", "true");
 
+        val idToken: GoogleIdToken = verifier.verify(tokenId)
+        if (idToken != null) {
+            val payload: GoogleIdToken.Payload = idToken.payload
 
+            // Print user identifier
+            val userId: String = payload.getSubject()
+            println("User ID: $userId")
+
+            // Get profile information from payload
+            val email: String = payload.getEmail()
+            val emailVerified: Boolean = java.lang.Boolean.valueOf(payload.getEmailVerified())
+            val name = payload.get("name")
+            val pictureUrl = payload.get("picture")
+            val locale = payload.get("locale")
+            val familyName = payload.get("family_name")
+            val givenName = payload.get("given_name")
+
+            print(email)
+        } else {
+            println("Invalid ID token.")
+        }
         /// Validate the token
         val json = HTTP.client.get<Map<String, Any?>>("https://oauth2.googleapis.com/tokeninfo?id_token=${tokenId.substringAfter("=")}")
 

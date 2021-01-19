@@ -51,20 +51,5 @@ internal fun ApplicationCompressionConfiguration(): Compression.Configuration.()
     }
 }
 
-// Defines authentication mechanisms used throughout the application.
-@KtorExperimentalAPI
-val ApplicationAuthProviders: Map<String, OAuthServerSettings> = listOf<OAuthServerSettings>(
-        OAuthServerSettings.OAuth2ServerSettings(
-            name = "google_oauth2",
-            authorizeUrl = "https://accounts.google.com/o/oauth2/v2/auth",
-            accessTokenUrl = "https://www.googleapis.com/oauth2/v3/token",
-            requestMethod = HttpMethod.Post,
-            clientId = settings.property("auth.oauth.google_oauth2.clientId").getString(),
-            clientSecret = settings.property("auth.oauth.google_oauth2.clientSecret").getString(),
-            defaultScopes = listOf("profile", "email")
-//            defaultScopes = listOf("profile", "email", "write_user", "read_user", "write_image", "read_image", "write_image_access", "read_image_access")
-        )
-).associateBy { it.name }
-
 // Provides an application-level fixed thread pool on which to execute coroutines (mainly)
 internal val ApplicationExecutors = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4)
