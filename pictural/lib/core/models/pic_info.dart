@@ -14,8 +14,8 @@ class PicInfo {
       @required this.ownerUuid,
       @required this.authorized});
 
-  PicInfo.fromJson(Map<String, dynamic> json)
-      : uuid = json["uuid"] as String,
-      ownerUuid = json["ownerUuid"] as String,
-      authorized = json["authorized"].map((i) => Friend.fromJson(i)).toList();
+  factory PicInfo.fromJson(Map<String, dynamic> json) => PicInfo(
+      uuid: json["uuid"] as String,
+      ownerUuid: json["ownerUuid"] as String,
+      authorized: (json["authorized"] as List).map((i) => Friend.fromJson(i)).toList());
 }

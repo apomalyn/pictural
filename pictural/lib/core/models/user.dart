@@ -15,14 +15,11 @@ class User {
       this.darkModeEnabled,
       this.pictureUrl});
 
-  User.fromJson(Map<String, dynamic> json)
-      : uuid = json["uuid"] as String,
-        name = json["name"] as String,
-        darkModeEnabled = json["darkModeEnabled"] as bool;
+  factory User.fromJson(Map<String, dynamic> json) => User(
+      uuid: json["uuid"] as String,
+      name: json["name"] as String,
+      darkModeEnabled: json["darkModeEnabled"] as bool);
 
-  Map<String, dynamic> toJson() => {
-    'uuid': uuid,
-    'name': name,
-    'darkModeEnabled': darkModeEnabled
-  };
+  Map<String, dynamic> toJson() =>
+      {'uuid': uuid, 'name': name, 'darkModeEnabled': darkModeEnabled};
 }

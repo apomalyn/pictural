@@ -19,9 +19,10 @@ class Album {
       @required this.images,
       @required this.friends});
 
-  Album.fromJson(Map<String, dynamic> json)
-      : uuid = json["uuid"] as String,
-        title = json["title"] as String,
-        images = json["images"].map((i) => PicInfo.fromJson(i)).toList(),
-        friends = json["friends"].map((i) => Friend.fromJson(i)).toList();
+  factory Album.fromJson(Map<String, dynamic> json) => Album(
+      uuid: json["uuid"] as String,
+      title: json["title"] as String,
+      images: (json["images"] as List).map((i) => PicInfo.fromJson(i)).toList(),
+      friends:
+          (json["friends"] as List).map((i) => Friend.fromJson(i)).toList());
 }
