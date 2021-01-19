@@ -16,9 +16,7 @@ class AppTheme {
 
   /// Light theme of the application
   static ThemeData lightTheme = ThemeData.light().copyWith(
-      primaryColor: bluePic,
-      scaffoldBackgroundColor: yellowPic,
-      accentColor: redPic,
+      accentColor: yellowPic,
       primaryTextTheme: TextTheme(
           headline1: TextStyle(
               color: Colors.black, fontSize: 30, fontFamily: 'Montserrat'),
@@ -41,7 +39,7 @@ class AppTheme {
   /// Dark theme of the application
   static ThemeData darkTheme = ThemeData.dark().copyWith(
       primaryColor: Colors.black,
-      accentColor: redPic,
+      accentColor: bluePic,
       primaryTextTheme: TextTheme(
           headline1: TextStyle(
               color: Colors.white, fontSize: 30, fontFamily: 'Montserrat'),

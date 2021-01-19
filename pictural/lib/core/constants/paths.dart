@@ -5,5 +5,5 @@ class Paths {
   static const String upload = "/upload";
   static const String albums = "/albums";
   static const String profile = "/profile";
-  static const String photos = "/ets/security";
+  static const String photos = "/photos";
 }

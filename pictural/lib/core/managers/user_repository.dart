@@ -26,8 +26,7 @@ class UserRepository {
 
         var user = await _picturalApi.login(idToken);
 
-        if(user == null)
-          return false;
+        if (user == null) return false;
 
         _user = user;
         _user.pictureUrl = fUser.photoURL;

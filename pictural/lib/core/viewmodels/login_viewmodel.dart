@@ -16,7 +16,7 @@ class LoginViewModel extends BaseViewModel {
     final bool loggingSuccessful = await _userRepository.logIn();
 
     if(loggingSuccessful) {
-      _navigationService.pushNamed(Paths.friends);
+      _navigationService.pushNamed(Paths.photos);
     } else {
       setBusy(false);
 

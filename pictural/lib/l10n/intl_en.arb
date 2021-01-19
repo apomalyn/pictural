@@ -14,5 +14,9 @@
   "profile_section": "Profile",
   "friends_section": "Friends",
   "photos_section": "Photos",
-  "album_section": "Albums"
+  "album_section": "Albums",
+
+  "photos_empty": "You don't have any pictures yet.",
+  "photos_tooltip_refresh": "Refresh the list of pictures.",
+  "photos_tooltip_add": "Upload a picture."
 }
