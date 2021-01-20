@@ -63,6 +63,8 @@ class AppTheme {
 
   Size get size => _size;
 
+  bool get useMobileLayout => _size.shortestSide < 600;
+
   void init(MediaQueryData data) {
     _size = data.size;
   }

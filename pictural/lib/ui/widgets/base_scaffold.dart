@@ -44,7 +44,7 @@ class BaseScaffold extends StatelessWidget {
             Row(
               children: [
                 if (_showNavigationRail) Menu(),
-                body,
+                Expanded(child: body),
               ],
             ),
             if (_isLoading) _buildLoading() else
