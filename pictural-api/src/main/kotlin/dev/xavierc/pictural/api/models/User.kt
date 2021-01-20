@@ -11,14 +11,12 @@
 */
 package dev.xavierc.pictural.api.models
 
-import java.util.*
-
 /**
  * 
  * @param uuid UUID of the user
  * @param name Name of the user
  * @param darkModeEnabled If the dark mode is enabled for the UI
- * @param pictureUuid Uuid of the profile picture of the user
+ * @param pictureUrl Url of the profile picture of the user
  */
 data class User(
     /* UUID of the user */
@@ -28,5 +26,5 @@ data class User(
     /* If the dark mode is enabled for the UI */
     val darkModeEnabled: Boolean? = null,
     /* Url of the profile picture of the user */
-    val pictureUuid: UUID? = null
+    val pictureUrl: String? = null
 )

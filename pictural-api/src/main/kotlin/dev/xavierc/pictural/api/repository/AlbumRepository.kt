@@ -48,9 +48,9 @@ class AlbumRepository {
 
                 // Get authorized users
                 val authorized: List<Friend> =
-                    AlbumsAuthorizedUsers.rightJoin(Users).slice(Users.uuid, Users.name, Users.pictureUuid)
+                    AlbumsAuthorizedUsers.rightJoin(Users).slice(Users.uuid, Users.name, Users.pictureUrl)
                         .select { AlbumsAuthorizedUsers.albumUuid.eq(uuid) and AlbumsAuthorizedUsers.userUuid.eq(Users.uuid) }
-                        .mapIndexed { _, it -> Friend(it[Users.uuid], it[Users.name], it[Users.pictureUuid]) }
+                        .mapIndexed { _, it -> Friend(it[Users.uuid], it[Users.name], it[Users.pictureUrl]) }
 
                 album = Album(albumInfo[Albums.uuid], albumInfo[Albums.ownerUuid], albumInfo[Albums.title], imagesUuid, authorized)
             }

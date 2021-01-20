@@ -3,7 +3,7 @@
   "info": {
     "title": "Pictural API",
     "description": "This API is part of my project for the Shopify Developer intern challenge. This API manage the users, pictures and links between accounts of Pictural.",
-    "version": "0.1.0",
+    "version": "1.1.0",
     "contact": {
       "email": "chretienxavier42@gmail.com",
       "name": "Xavier Chrétien",
@@ -79,15 +79,14 @@
                     "description": "Updated name of the user",
                     "example": "Xavier Chrétien"
                   },
-                  "dark_mode_enabled": {
+                  "darkModeEnabled": {
                     "type": "boolean",
                     "default": false,
                     "description": "If the dark mode is enabled for the UI"
                   },
-                  "pictureUuid": {
+                  "pictureUrl": {
                     "type": "string",
-                    "format": "uuid",
-                    "description": "Updated uuid of the profile picture"
+                    "description": "Updated url of the profile picture"
                   }
                 }
               }
@@ -1112,10 +1111,9 @@
             "default": false,
             "description": "If the dark mode is enabled for the UI"
           },
-          "pictureUuid": {
+          "pictureUrl": {
             "type": "string",
-            "format": "uuid",
-            "description": "Uuid of the profile picture of the user"
+            "description": "Url of the user profile picture."
           }
         },
         "required": [

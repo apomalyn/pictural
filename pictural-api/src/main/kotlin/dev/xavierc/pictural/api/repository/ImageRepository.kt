@@ -48,9 +48,9 @@ class ImageRepository {
             val imageInfoResult = ImagesInfo.select { ImagesInfo.uuid eq imageUuid }.singleOrNull()
 
             if (imageInfoResult != null) {
-                val authorizedUsers = ImagesAuthorizedUsers.rightJoin(Users).slice(Users.uuid, Users.name, Users.pictureUuid)
+                val authorizedUsers = ImagesAuthorizedUsers.rightJoin(Users).slice(Users.uuid, Users.name, Users.pictureUrl)
                     .select { ImagesAuthorizedUsers.imageUuid.eq(imageUuid) and Users.uuid.eq(ImagesAuthorizedUsers.userUuid)}
-                    .mapIndexed { _, it -> Friend(it[Users.uuid], it[Users.name], it[Users.pictureUuid]) }
+                    .mapIndexed { _, it -> Friend(it[Users.uuid], it[Users.name], it[Users.pictureUrl]) }
 
                 imageInfo = ImageInfo(
                     imageInfoResult[ImagesInfo.uuid],

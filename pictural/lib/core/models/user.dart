@@ -21,5 +21,5 @@ class User {
       darkModeEnabled: json["darkModeEnabled"] as bool);
 
   Map<String, dynamic> toJson() =>
-      {'uuid': uuid, 'name': name, 'darkModeEnabled': darkModeEnabled};
+      {'uuid': uuid, 'name': name, 'darkModeEnabled': darkModeEnabled, 'pictureUrl': pictureUrl};
 }

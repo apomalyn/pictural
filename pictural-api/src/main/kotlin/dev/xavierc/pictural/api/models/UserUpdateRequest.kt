@@ -7,6 +7,6 @@ import java.util.*
  *
  * @param name Updated name of the user
  * @param darkModeEnabled If the dark mode is enabled for the UI
- * @param pictureUuid Updated uuid of the profile picture of the user
+ * @param pictureUrl Updated url of the profile picture of the user
  */
-data class UserUpdateRequest(val name: String?, val darkModeEnabled: Boolean?, val pictureUuid: UUID?)
+data class UserUpdateRequest(val name: String?, val darkModeEnabled: Boolean?, val pictureUrl: String?)

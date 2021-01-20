@@ -13,7 +13,7 @@ object Users : Table() {
     val uuid: Column<String> = varchar("uuid", 128).primaryKey()
     val name: Column<String> = varchar("name", 128)
     val darkModeEnabled: Column<Boolean> = bool("darkModeEnabled").default(false)
-    val pictureUuid: Column<UUID?> = (uuid("pictureUuid") references ImagesInfo.uuid).nullable()
+    val pictureUrl: Column<String?> = varchar("pictureUrl", 256).nullable()
 }
 
 object Friends : Table() {
@@ -31,7 +31,7 @@ class UserRepository {
             val results = Users.select { Users.uuid eq uuid }.singleOrNull()
 
             if (results != null) {
-                user = User(uuid, results[Users.name], results[Users.darkModeEnabled], results[Users.pictureUuid])
+                user = User(uuid, results[Users.name], results[Users.darkModeEnabled], results[Users.pictureUrl])
             }
         }
 
@@ -41,7 +41,7 @@ class UserRepository {
     /**
      * Update the user info of [uuid]
      */
-    fun updateUserInfo(uuid: String, name: String?, darkModeEnabled: Boolean?, pictureUuid: UUID?) {
+    fun updateUserInfo(uuid: String, name: String?, darkModeEnabled: Boolean?, pictureUrl: String?) {
         transaction {
             Users.update(where = { Users.uuid eq uuid }, limit = 1) {
                 if (name != null) {
@@ -52,8 +52,8 @@ class UserRepository {
                     it[Users.darkModeEnabled] = darkModeEnabled
                 }
 
-                if (pictureUuid != null) {
-                    it[Users.pictureUuid] = pictureUuid
+                if (pictureUrl != null) {
+                    it[Users.pictureUrl] = pictureUrl
                 }
             }
         }
@@ -62,14 +62,14 @@ class UserRepository {
     /**
      * Create an user
      */
-    fun addUserInfo(uuid: String, name: String, pictureUuid: UUID?) {
+    fun addUserInfo(uuid: String, name: String, pictureUrl: String?) {
         transaction {
             Users.insert {
                 it[Users.uuid] = uuid
                 it[Users.name] = name
 
-                if (pictureUuid != null) {
-                    it[Users.pictureUuid] = pictureUuid
+                if (pictureUrl != null) {
+                    it[Users.pictureUrl] = pictureUrl
                 }
             }
         }
@@ -83,9 +83,9 @@ class UserRepository {
 
         transaction {
             Friends.join(Users, JoinType.LEFT, additionalConstraint = { Friends.friendUuid eq Users.uuid })
-                .slice(Friends.friendUuid, Users.name, Users.pictureUuid)
+                .slice(Friends.friendUuid, Users.name, Users.pictureUrl)
                 .select { Friends.userUuid eq userUuid }.forEach {
-                    friendList.add(Friend(it[Friends.friendUuid], it[Users.name], it[Users.pictureUuid]))
+                    friendList.add(Friend(it[Friends.friendUuid], it[Users.name], it[Users.pictureUrl]))
                 }
         }
 
