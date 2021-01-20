@@ -7,6 +7,8 @@ This project was built to satisfy the shopify Challenge for Summer 2021.
 
 ## Details
 
+[![API](https://img.shields.io/badge/API-1.0.0-green.svg)](https://shields.io/) [![ui](https://img.shields.io/badge/UI-0.1.0-green.svg)](https://shields.io/)
+
 The project is divided in two parts: the `pictural api` and the `ui`.
 
 ### Pictural API (backend)
