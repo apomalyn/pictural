@@ -79,7 +79,7 @@
                     "description": "Updated name of the user",
                     "example": "Xavier Chrétien"
                   },
-                  "dark_mode_enabled": {
+                  "darkModeEnabled": {
                     "type": "boolean",
                     "default": false,
                     "description": "If the dark mode is enabled for the UI"

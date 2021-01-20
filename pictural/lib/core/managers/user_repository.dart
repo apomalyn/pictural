@@ -1,4 +1,5 @@
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:logger/logger.dart';
 import 'package:pictural/core/models/user.dart';
 import 'package:pictural/core/services/pictural_api.dart';
 import 'package:pictural/locator.dart';
@@ -6,7 +7,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fAuth;
 
 class UserRepository {
+  static const String tag = "UserRepository";
+
   final PicturalApi _picturalApi = locator<PicturalApi>();
+
+  final Logger _logger = locator<Logger>();
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: ['email'],
@@ -14,6 +19,7 @@ class UserRepository {
   final fAuth.FirebaseAuth _auth = fAuth.FirebaseAuth.instance;
 
   User _user;
+
   User get user => _user;
 
   /// Log in the user using google sign in, if [silent] is true, will try to connect silently
@@ -29,12 +35,21 @@ class UserRepository {
         if (user == null) return false;
 
         _user = user;
-        _user.pictureUrl = fUser.photoURL;
+
+        if (_user.pictureUrl != fUser.photoURL) {
+          _user.pictureUrl = fUser.photoURL;
+          try {
+            await _picturalApi.updateUserInfo(
+                _user.name, _user.darkModeEnabled, _user.pictureUrl);
+          } catch (e) {
+            _logger.e("$tag - $e while trying to update the user picture");
+          }
+        }
 
         return true;
       }
     } catch (error) {
-      print(error);
+      _logger.e("$tag - error");
     }
 
     return false;

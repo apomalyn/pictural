@@ -5,15 +5,15 @@ class Friend {
 
   final String name;
 
-  final String pictureUuid;
+  final String pictureUrl;
 
-  Friend({@required this.uuid, @required this.name, this.pictureUuid});
+  Friend({@required this.uuid, @required this.name, this.pictureUrl});
 
   factory Friend.fromJson(Map<String, dynamic> json) => Friend(
       uuid: json["uuid"] as String,
       name: json["name"] as String,
-      pictureUuid: json["pictureUuid"] as String);
+      pictureUrl: json["pictureUrl"] as String);
 
   Map<String, dynamic> toJson() =>
-      {'uuid': uuid, 'name': name, 'pictureUuid': pictureUuid};
+      {'uuid': uuid, 'name': name, 'pictureUrl': pictureUrl};
 }

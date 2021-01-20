@@ -44,8 +44,6 @@ fun Route.ImageApi(imageDir: File) {
     // Add access to an image
     post { request: Paths.ImageAccessAdd ->
         val user = call.sessions.get<UserSession>()
-        call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
-        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
         if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
@@ -70,8 +68,6 @@ fun Route.ImageApi(imageDir: File) {
     // Remove access to an image
     delete { request: Paths.ImageAccessDelete ->
         val user = call.sessions.get<UserSession>()
-        call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
-        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
         if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
@@ -101,8 +97,6 @@ fun Route.ImageApi(imageDir: File) {
     // Delete an image
     delete { request: Paths.ImageDelete ->
         val user = call.sessions.get<UserSession>()
-        call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
-        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
         if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
@@ -130,8 +124,6 @@ fun Route.ImageApi(imageDir: File) {
     // Get an image
     get { request: Paths.ImageGet ->
         val user = call.sessions.get<UserSession>()
-        call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
-        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
         if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
@@ -154,8 +146,6 @@ fun Route.ImageApi(imageDir: File) {
     // Get the info of an image
     get { request: Paths.ImageInfoGet ->
         val user = call.sessions.get<UserSession>()
-        call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
-        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
         if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
@@ -176,8 +166,6 @@ fun Route.ImageApi(imageDir: File) {
     // Upload of an image
     post { _: Paths.ImageUpload ->
         val user = call.sessions.get<UserSession>()
-        call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
-        call.response.headers.append("Access-Control-Allow-Credentials", "true")
 
         if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)
@@ -204,9 +192,7 @@ fun Route.ImageApi(imageDir: File) {
 
     // Get the images for the user.
     get { _: Paths.ImagesGet ->
-        val user = call.sessions.get<UserSession>()
-        call.response.headers.append("Access-Control-Allow-Origin", "http://localhost:56928")
-        call.response.headers.append("Access-Control-Allow-Credentials", "true");
+        val user = call.sessions.get<UserSession>();
 
         if (user == null) {
             call.respond(HttpStatusCode.Unauthorized)

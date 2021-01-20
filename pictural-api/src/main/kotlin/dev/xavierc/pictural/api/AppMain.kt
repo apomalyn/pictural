@@ -7,7 +7,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
 import io.ktor.config.HoconApplicationConfig
 import io.ktor.gson.GsonConverter
-import io.ktor.http.ContentType
 import io.ktor.auth.Authentication
 import io.ktor.auth.oauth
 import dev.xavierc.pictural.api.apis.AlbumApi
@@ -22,6 +21,7 @@ import dev.xavierc.pictural.api.repository.initDB
 import io.ktor.application.*
 import io.ktor.client.features.json.*
 import io.ktor.features.*
+import io.ktor.http.*
 import io.ktor.locations.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -57,6 +57,15 @@ fun Application.main() {
     install(AutoHeadResponse) // see http://ktor.io/features/autoheadresponse.html
     install(HSTS, ApplicationHstsConfiguration()) // see http://ktor.io/features/hsts.html
     install(Compression, ApplicationCompressionConfiguration()) // see http://ktor.io/features/compression.html
+    install(CORS) {
+        method(HttpMethod.Put)
+        method(HttpMethod.Post)
+        method(HttpMethod.Get)
+        method(HttpMethod.Delete)
+        host("localhost:56928", schemes = listOf("http"))
+        allowNonSimpleContentTypes = true
+        allowCredentials = true
+    }
     install(DataConversion) {
         convert<UUID> {
             decode { values, _ -> values.singleOrNull()?.let { UUID.fromString(it) }

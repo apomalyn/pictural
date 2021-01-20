@@ -15,6 +15,10 @@ class PicturalApi {
   static const String tag = "PicturalApi";
   static const String errorTag = "$tag - Error";
 
+  final Map<String, String> _defaultHeaders = {
+    "Content-Type": "application/json"
+  };
+
   http.Client _client;
 
   /// Gateway to the Pictural API.
@@ -28,7 +32,9 @@ class PicturalApi {
   /// Login the user
   Future<User> login(String idToken) async {
     try {
-      var response = await _client.post(Urls.login, body: "idToken=$idToken");
+      var response = await _client.post(Urls.login,
+          headers: {"Content-Type": "application/x-www-form-urlencoded"},
+          body: "idToken=$idToken");
 
       if (response.statusCode == HttpStatus.ok) {
         return User.fromJson(jsonDecode(response.body));
@@ -52,12 +58,13 @@ class PicturalApi {
 
   /// Update the current user.
   Future<bool> updateUserInfo(
-      String name, bool darkModeEnabled, String pictureUuid) async {
+      String name, bool darkModeEnabled, String pictureUrl) async {
     final response = await _client.put(Urls.user,
+        headers: _defaultHeaders,
         body: jsonEncode({
           "name": name,
           "darkModeEnabled": darkModeEnabled,
-          "pictureUuid": pictureUuid
+          "pictureUrl": pictureUrl
         }));
 
     if (response.statusCode == HttpStatus.ok) {
@@ -170,7 +177,7 @@ class PicturalApi {
   /// Return the uuid of the created album.
   Future<String> addAlbum(
       String title, List<PicInfo> images, List<Friend> friends) async {
-    final response = await _client.post(Urls.albumAdd,
+    final response = await _client.post(Urls.albumAdd, headers: _defaultHeaders,
         body: jsonEncode({
           "title": title,
           "images": images.map<String>((image) => image.uuid),
@@ -188,7 +195,7 @@ class PicturalApi {
   /// Update the [title] of album corresponding to [uuid]
   Future updateAlbum(String uuid, String title) async {
     final response =
-        await _client.put(Urls.album(uuid), body: jsonEncode({"title": title}));
+        await _client.put(Urls.album(uuid), headers: _defaultHeaders, body: jsonEncode({"title": title}));
 
     if (response.statusCode != HttpStatus.ok) {
       throw ApiException(prefix: errorTag, errorCode: response.statusCode);
@@ -206,7 +213,7 @@ class PicturalApi {
 
   /// Share the album corresponding to [uuid] with [friends].
   Future shareAlbumWith(String uuid, List<Friend> friends) async {
-    final response = await _client.post(Urls.albumFriendAdd(uuid),
+    final response = await _client.post(Urls.albumFriendAdd(uuid), headers: _defaultHeaders,
         body: jsonEncode(
             {"friends": friends.map<String>((friend) => friend.uuid)}));
 
@@ -227,7 +234,7 @@ class PicturalApi {
 
   /// Add [images] into the album corresponding to [uuid].
   Future addImageIntoAlbum(String uuid, List<PicInfo> images) async {
-    final response = await _client.post(Urls.albumImagesAdd(uuid),
+    final response = await _client.post(Urls.albumImagesAdd(uuid), headers: _defaultHeaders,
         body:
             jsonEncode({"images": images.map<String>((image) => image.uuid)}));
 
