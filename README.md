@@ -1,13 +1,13 @@
 # Pictural
 
-Pictural is an image repository to upload and share your pictures with your friends and 
-loved ones. 
+Pictural is an image repository to upload and share your pictures with your friends and
+loved ones.
 
 This project was built to satisfy the shopify Challenge for Summer 2021.
 
 ## Details
 
-[![API](https://img.shields.io/badge/API-1.0.0-blue.svg)](https://shields.io/) [![ui](https://img.shields.io/badge/UI-0.1.0-blue.svg)](https://shields.io/)
+[![API](https://img.shields.io/badge/API-1.1.0-blue.svg)](https://shields.io/) [![ui](https://img.shields.io/badge/UI-0.1.0-blue.svg)](https://shields.io/)
 
 The project is divided in two parts: the `pictural api` and the `ui`.
 
@@ -23,7 +23,7 @@ The project is divided in two parts: the `pictural api` and the `ui`.
 
 **Description**: The API manage the users, pictures, albums and all the links between them.
 The API follows the [OpenAPI initiative](https://www.openapis.org/) and so you can find its
-contract: [here](https://apomalyn.github.io/pictural/#overview). The authentification 
+contract: [here](https://apomalyn.github.io/pictural/#overview). The authentification
 use OAuth2 with Google Sign In API.
 
 ### UI (frontend)
