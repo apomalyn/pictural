@@ -39,9 +39,8 @@ use OAuth2 with Google Sign In API.
 
 ## Features
 
-Below you can find the list of general features of the platform, to see more specific
-head to the README of each part. You can also head to the issues/project section to see
-the progression of feature.
+Below you can find the list of general features of the platform. You can also head to the issues/project section to see
+the progression of features.
 
 [![GitHub issues](https://img.shields.io/github/issues/Naereen/StrapDown.js.svg)](https://github.com/apomalyn/pictural/issues)
 
