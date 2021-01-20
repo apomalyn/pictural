@@ -7,7 +7,7 @@ This project was built to satisfy the shopify Challenge for Summer 2021.
 
 ## Details
 
-[![API](https://img.shields.io/badge/API-1.0.0-green.svg)](https://shields.io/) [![ui](https://img.shields.io/badge/UI-0.1.0-green.svg)](https://shields.io/)
+[![API](https://img.shields.io/badge/API-1.0.0-blue.svg)](https://shields.io/) [![ui](https://img.shields.io/badge/UI-0.1.0-blue.svg)](https://shields.io/)
 
 The project is divided in two parts: the `pictural api` and the `ui`.
 
@@ -63,4 +63,4 @@ the progression of features.
 | Search a user                 	| Allow a user to search other user on the platform.                                                           	| [![API](https://img.shields.io/badge/API-No-red.svg)](https://shields.io/) [![ui](https://img.shields.io/badge/UI-No-red.svg)](https://shields.io/)                   |
 | Add a user as a friend        	| Allow a user to add another user on his friends list.                                                        	| [![API](https://img.shields.io/badge/API-Done-green.svg)](https://shields.io/) [![ui](https://img.shields.io/badge/UI-No-red.svg)](https://shields.io/)               |
 | Remove a friend from the list 	| Allow a user to remove another user from his friends list.                                                   	| [![API](https://img.shields.io/badge/API-Done-green.svg)](https://shields.io/) [![ui](https://img.shields.io/badge/UI-No-red.svg)](https://shields.io/)               |
-| Retrieve friends list         	| Allow a user to retrieve his friends list.                                                                   	| [![API](https://img.shields.io/badge/API-Done-green.svg)](https://shields.io/) [![ui](https://img.shields.io/badge/UI-No-red.svg)](https://shields.io/)               |
+| Retrieve friends list         	| Allow a user to retrieve his friends list.                                                                   	| [![API](https://img.shields.io/badge/API-Done-green.svg)](https://shields.io/) [![ui](https://img.shields.io/badge/UI-In%20Progress-orange.svg)](https://shields.io/)               |

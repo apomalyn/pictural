@@ -128,7 +128,7 @@ fun Route.UserApi() {
         } else {
             val request = call.receive<UserUpdateRequest>()
 
-            userRepository.updateUserInfo(user.uid, request.name, request.darkModeEnabled, request.pictureUuid)
+            userRepository.updateUserInfo(user.uid, request.name, request.darkModeEnabled, request.pictureUrl)
 
             call.respond(HttpStatusCode.OK)
         }
@@ -151,7 +151,7 @@ fun Route.UserApi() {
             else -> {
                 val request = call.receive<UserAddRequest>()
 
-                userRepository.addUserInfo(user.uid, request.name, request.pictureUuid)
+                userRepository.addUserInfo(user.uid, request.name, request.pictureUrl)
                 call.respond(HttpStatusCode.Created)
             }
         }
@@ -169,38 +169,24 @@ fun Route.UserApi() {
 
             // Print user identifier
             val userId: String = payload.getSubject()
-            println("User ID: $userId")
 
             // Get profile information from payload
-            val email: String = payload.getEmail()
-            val emailVerified: Boolean = java.lang.Boolean.valueOf(payload.getEmailVerified())
             val name = payload.get("name")
             val pictureUrl = payload.get("picture")
-            val locale = payload.get("locale")
-            val familyName = payload.get("family_name")
-            val givenName = payload.get("given_name")
 
-            print(email)
-        } else {
-            println("Invalid ID token.")
-        }
-        /// Validate the token
-        val json = HTTP.client.get<Map<String, Any?>>("https://oauth2.googleapis.com/tokeninfo?id_token=${tokenId.substringAfter("=")}")
 
-        val id = json["sub"] as String?
-//        val id = "112920064076876960843"
-
-        if (id != null) {
-            val results = userRepository.getUserInfo(id)
+            val results = userRepository.getUserInfo(userId)
             if (results != null) {
                 call.sessions.set(UserSession(results.uuid))
                 call.respond(HttpStatusCode.OK, results)
             } else {
-                call.sessions.set(UserSession(id))
-                userRepository.addUserInfo(id, json["name"] as String, null)
-                call.respond(HttpStatusCode.OK, userRepository.getUserInfo(id)!!)
+                call.sessions.set(UserSession(userId))
+                userRepository.addUserInfo(userId, name as String, pictureUrl as String?)
+                call.respond(HttpStatusCode.OK, userRepository.getUserInfo(userId)!!)
             }
+
         } else {
+            println("Invalid ID token.")
             call.respond(HttpStatusCode.BadRequest)
         }
     }
