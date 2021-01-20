@@ -48,7 +48,7 @@ class PictureRepository {
     if (isSuccess) {
       _logger.d("$tag - Upload succeed.");
       // Reload pictures
-      getPictures();
+      await getPictures();
     }
 
     return isSuccess;
