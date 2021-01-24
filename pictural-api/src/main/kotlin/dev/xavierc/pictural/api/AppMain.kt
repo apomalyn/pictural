@@ -1,18 +1,14 @@
 package dev.xavierc.pictural.api
 
-import com.codahale.metrics.Slf4jReporter
-import com.google.gson.GsonBuilder
+import com.google.gson.internal.bind.TypeAdapters.UUID
 import com.typesafe.config.ConfigFactory
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
 import io.ktor.config.HoconApplicationConfig
 import io.ktor.gson.GsonConverter
-import io.ktor.auth.Authentication
-import io.ktor.auth.oauth
 import dev.xavierc.pictural.api.apis.AlbumApi
 import dev.xavierc.pictural.api.apis.ImageApi
 import dev.xavierc.pictural.api.apis.UserApi
-import dev.xavierc.pictural.api.models.User
 import dev.xavierc.pictural.api.models.UserSession
 import dev.xavierc.pictural.api.repository.AlbumRepository
 import dev.xavierc.pictural.api.repository.ImageRepository
@@ -24,7 +20,6 @@ import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.locations.*
 import io.ktor.request.*
-import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.sessions.*
 import io.ktor.util.*
@@ -68,7 +63,7 @@ fun Application.main() {
     }
     install(DataConversion) {
         convert<UUID> {
-            decode { values, _ -> values.singleOrNull()?.let { UUID.fromString(it) }
+            decode { values, _ -> values.singleOrNull()?.let { java.util.UUID.fromString(it) }
 
             }
             encode {
@@ -97,26 +92,14 @@ fun Application.main() {
             transform(SessionTransportTransformerMessageAuthentication(hex(sessionConfig.property("key").getString())))
         }
     }
-//    install(Authentication) {
-//        oauth("google_oauth2") {
-//            client = HttpClient(Apache)
-//            providerLookup = { ApplicationAuthProviders["google_oauth2"] }
-//            urlProvider = { _ ->
-//            redirectUrl(Paths.UserLogin())
-//            }
-//        }
-//    }
     install(Routing) {
         AlbumApi()
         ImageApi(imageDir)
         UserApi()
-        routing {
-            get("/") { call.respondText("HELLO") }
-        }
     }
 
     // Initialize database
-    initDB()
+    initDB(picturalConfig.config("database"))
 
     di {
         bind<UserRepository>() with singleton { UserRepository() }
