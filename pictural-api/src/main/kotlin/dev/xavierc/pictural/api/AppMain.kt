@@ -2,6 +2,7 @@ package dev.xavierc.pictural.api
 
 import com.codahale.metrics.Slf4jReporter
 import com.google.gson.GsonBuilder
+import com.google.gson.internal.bind.TypeAdapters.UUID
 import com.typesafe.config.ConfigFactory
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
@@ -110,9 +111,6 @@ fun Application.main() {
         AlbumApi()
         ImageApi(imageDir)
         UserApi()
-        routing {
-            get("/") { call.respondText("HELLO") }
-        }
     }
 
     // Initialize database
