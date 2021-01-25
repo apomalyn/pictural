@@ -22,5 +22,8 @@
   "photos_tooltip_add": "Upload a picture.",
   "photos_tab_all": "All",
   "photos_tab_mine": "My pictures",
-  "photos_tab_shared": "Shared with me"
+  "photos_tab_shared": "Shared with me",
+
+  "friends_empty": "You don't have anyone on your friends list yet.",
+  "friends_tooltip_refresh": "Refresh your list of friends."
 }

@@ -75,12 +75,12 @@ class PicturalApi {
 
   /// Get the list of friend for the current user
   Future<List<Friend>> getFriendList() async {
-    final response = await _client.post(Urls.getFriends);
+    final response = await _client.get(Urls.getFriends);
 
     if (response.statusCode == HttpStatus.ok) {
-      var json = jsonDecode(response.body).cast<Map<String, dynamic>>();
+      var json = jsonDecode(response.body)["friends"] as List;
 
-      return json["friends"].map<Friend>((i) => Friend.fromJson(i)).toList();
+      return json.map<Friend>((i) => Friend.fromJson(i)).toList();
     }
     // Otherwise
     throw ApiException(prefix: errorTag, errorCode: response.statusCode);

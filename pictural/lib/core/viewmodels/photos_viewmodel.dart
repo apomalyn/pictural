@@ -1,15 +1,17 @@
 import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
+import 'package:pictural/core/constants/paths.dart';
 import 'package:pictural/core/managers/picture_repository.dart';
 import 'package:pictural/core/managers/user_repository.dart';
 import 'package:pictural/core/models/pic_info.dart';
+import 'package:pictural/core/services/navigation_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:pictural/locator.dart';
 
 class PhotosViewModel extends FutureViewModel<List<PicInfo>> {
   final PictureRepository _pictureRepository = locator<PictureRepository>();
   final UserRepository _userRepository = locator<UserRepository>();
-
+  final NavigationService _navigationService = locator<NavigationService>();
   final Logger _logger = locator<Logger>();
 
   final ImagePicker _picker = ImagePicker();
@@ -19,8 +21,7 @@ class PhotosViewModel extends FutureViewModel<List<PicInfo>> {
 
   /// Retrieve only the pictures shared with the user.
   List<PicInfo> get picturesSharedWithUser {
-    if(_userRepository.user == null)
-      return [];
+    if (_userRepository.user == null) return [];
     final List<PicInfo> picturesShared = [];
 
     for (PicInfo picture in _pictureRepository.pictures) {
@@ -34,8 +35,7 @@ class PhotosViewModel extends FutureViewModel<List<PicInfo>> {
 
   /// Retrieve only the pictures owned by the user.
   List<PicInfo> get userPictures {
-    if(_userRepository.user == null)
-      return [];
+    if (_userRepository.user == null) return [];
     final List<PicInfo> userPictures = [];
 
     for (PicInfo picture in _pictureRepository.pictures) {
@@ -48,11 +48,17 @@ class PhotosViewModel extends FutureViewModel<List<PicInfo>> {
   }
 
   @override
-  Future<List<PicInfo>> futureToRun() =>
-      _pictureRepository.getPictures().then((value) {
-        if (value == null) onError(_pictureRepository.errorCode);
-        return [];
-      });
+  Future<List<PicInfo>> futureToRun() async {
+    if (_userRepository.user == null) {
+      if (await _userRepository.logIn(silent: true) == false)
+        _navigationService.pushReplacementNamed(Paths.login);
+    }
+
+    return _pictureRepository.getPictures().then((value) {
+      if (value == null) onError(_pictureRepository.errorCode);
+      return [];
+    });
+  }
 
   @override
   void onError(error) {

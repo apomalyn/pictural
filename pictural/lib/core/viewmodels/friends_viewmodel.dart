@@ -1,26 +1,51 @@
+import 'package:logger/logger.dart';
 import 'package:pictural/core/constants/paths.dart';
+import 'package:pictural/core/managers/friend_repository.dart';
 import 'package:pictural/core/managers/user_repository.dart';
-import 'package:pictural/core/models/user.dart';
+import 'package:pictural/core/models/friend.dart';
 import 'package:pictural/core/services/navigation_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:pictural/locator.dart';
 
-class FriendsViewModel extends FutureViewModel<User> {
+class FriendsViewModel extends FutureViewModel<List<Friend>> {
+  final Logger _logger = locator<Logger>();
+
   final UserRepository _userRepository = locator<UserRepository>();
 
   final NavigationService _navigationService = locator<NavigationService>();
 
-  User get user => _userRepository.user;
+  final FriendRepository _friendRepository = locator<FriendRepository>();
+
+  List<Friend> get friends => _friendRepository.friendsList;
 
   @override
-  Future<User> futureToRun() async {
-    setBusy(true);
+  Future<List<Friend>> futureToRun() async {
     if (_userRepository.user == null) {
       if (await _userRepository.logIn(silent: true) == false)
         _navigationService.pushReplacementNamed(Paths.login);
     }
-    setBusy(false);
 
-    return _userRepository.user;
+    return _friendRepository.getFriendsList().then((value) {
+      if (value == null) onError(_friendRepository.errorCode);
+      return [];
+    });
+  }
+
+  @override
+  void onError(error) {
+    // TODO toast error message
+    _logger.e("Error ! $error");
+  }
+
+  /// Refresh the list of pictures
+  Future refresh() async {
+    _logger.i("User ask to refresh the friends list.");
+    setBusy(true);
+    final res = await _friendRepository.getFriendsList();
+    if (res == null) {
+      _logger.e(_friendRepository.errorCode);
+      onError(_friendRepository.errorCode);
+    }
+    setBusy(false);
   }
 }
