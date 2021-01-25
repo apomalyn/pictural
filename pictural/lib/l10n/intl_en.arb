@@ -5,6 +5,7 @@
 
   "confirm": "Confirm",
   "cancel": "Cancel",
+  "error": "Something went wrong. Please try again.",
 
   "google_sign_in_button": "Sign in with Google",
 

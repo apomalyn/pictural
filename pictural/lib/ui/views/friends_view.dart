@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pictural/core/models/friend.dart';
 import 'package:pictural/core/viewmodels/friends_viewmodel.dart';
 import 'package:pictural/generated/l10n.dart';
 import 'package:pictural/ui/utils/app_theme.dart';

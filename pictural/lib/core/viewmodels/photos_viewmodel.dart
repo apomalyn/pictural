@@ -1,10 +1,12 @@
 import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:pictural/core/constants/paths.dart';
 import 'package:pictural/core/managers/picture_repository.dart';
 import 'package:pictural/core/managers/user_repository.dart';
 import 'package:pictural/core/models/pic_info.dart';
 import 'package:pictural/core/services/navigation_service.dart';
+import 'package:pictural/generated/l10n.dart';
 import 'package:stacked/stacked.dart';
 import 'package:pictural/locator.dart';
 
@@ -65,8 +67,8 @@ class PhotosViewModel extends FutureViewModel<List<PicInfo>> {
 
   @override
   void onError(error) {
-    // TODO toast error message
     _logger.e("Error ! $error");
+    showToast(AppIntl.current.error, duration: const Duration(seconds: 3));
   }
 
   /// Refresh the list of pictures

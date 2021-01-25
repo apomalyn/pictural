@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:pictural/locator.dart';
 import 'package:pictural/ui/router.dart';
 import 'package:pictural/ui/utils/app_theme.dart';
@@ -18,19 +19,21 @@ class Pictural extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "Pictural",
-      darkTheme: AppTheme.darkTheme,
-      theme: AppTheme.lightTheme,
-      localizationsDelegates: const [
-        AppIntl.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ],
-      navigatorKey: locator<NavigationService>().navigatorKey,
-      supportedLocales: AppIntl.delegate.supportedLocales,
-      onGenerateRoute: AppRouter.generateRoute,
-      home: StartUpView(),
+    return OKToast(
+      child: MaterialApp(
+        title: "Pictural",
+        darkTheme: AppTheme.darkTheme,
+        theme: AppTheme.lightTheme,
+        localizationsDelegates: const [
+          AppIntl.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+        navigatorKey: locator<NavigationService>().navigatorKey,
+        supportedLocales: AppIntl.delegate.supportedLocales,
+        onGenerateRoute: AppRouter.generateRoute,
+        home: StartUpView(),
+      ),
     );
   }
 }

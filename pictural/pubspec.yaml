@@ -37,6 +37,7 @@ dependencies:
   image_picker: ^0.6.7+21
   # TODO update when: https://github.com/flutter/plugins/pull/3388 will be able to get the format
   image_picker_for_web: ^0.1.0+2
+  oktoast: ^2.3.2
 
   # Authentication
   google_sign_in: ^4.5.9
