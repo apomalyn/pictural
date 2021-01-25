@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 
 class AppTheme {
@@ -64,6 +65,8 @@ class AppTheme {
   Size get size => _size;
 
   bool get useMobileLayout => _size.shortestSide < 600;
+
+  bool get isMobile => Platform.isAndroid || Platform.isIOS;
 
   void init(MediaQueryData data) {
     _size = data.size;

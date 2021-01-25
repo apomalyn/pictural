@@ -42,6 +42,7 @@ class BaseScaffold extends StatelessWidget {
         child: Stack(
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (_showNavigationRail) Menu(),
                 Expanded(child: body),
