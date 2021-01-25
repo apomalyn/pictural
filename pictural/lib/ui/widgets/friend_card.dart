@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:pictural/core/models/friend.dart';
 import 'package:pictural/ui/utils/app_theme.dart';
 
-typedef FriendFunction = void Function(Friend);
 
 class FriendCard extends StatefulWidget {
   final Friend friend;
 
-  final FriendFunction deleteCallback;
+  final VoidCallback deleteCallback;
 
   const FriendCard({Key key, this.friend, this.deleteCallback})
       : super(key: key);
@@ -38,7 +37,7 @@ class _FriendCardState extends State<FriendCard> {
                 child: IconButton(
                     icon: Icon(Icons.delete_outlined),
                     onPressed: () =>
-                        widget.deleteCallback(widget.friend)),
+                        widget.deleteCallback()),
               ),
             Column(
               mainAxisSize: MainAxisSize.min,

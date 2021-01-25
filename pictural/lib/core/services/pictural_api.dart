@@ -86,6 +86,15 @@ class PicturalApi {
     throw ApiException(prefix: errorTag, errorCode: response.statusCode);
   }
 
+  /// Remove a friend from the list
+  Future deleteFriend(String uuid) async {
+    final response = await _client.delete(Urls.friend(uuid));
+
+    if (response.statusCode != HttpStatus.ok) {
+      throw ApiException(prefix: errorTag, errorCode: response.statusCode);
+    }
+  }
+
   /// Get the list of pictures owned/shared with the current user
   Future<List<PicInfo>> getPictures() async {
     final response = await _client.get(Urls.images);

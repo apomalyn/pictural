@@ -3,6 +3,10 @@
   "not_found": "Oups! Page not found....",
   "not_found_button": "Return to home page",
 
+  "confirm": "Confirm",
+  "cancel": "Cancel",
+  "error": "Something went wrong. Please try again.",
+
   "google_sign_in_button": "Sign in with Google",
 
   "greetings": "Welcome {name} !",
@@ -25,5 +29,11 @@
   "photos_tab_shared": "Shared with me",
 
   "friends_empty": "You don't have anyone on your friends list yet.",
-  "friends_tooltip_refresh": "Refresh your list of friends."
+  "friends_tooltip_refresh": "Refresh your list of friends.",
+  "friends_delete": "Do you want to remove {name} from your friends?",
+  "@friends_delete": {
+    "placeholders": {
+      "name": {}
+    }
+  }
 }

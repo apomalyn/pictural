@@ -15,7 +15,7 @@ class Urls {
   static const String getFriends = "$picturalApi/user/friends";
 
   /// Add or remove a friend of the list
-  static String friend(friendUuid) => "$picturalApi/user/friend/$friendUuid";
+  static String friend(friendUuid) => "$picturalApi/user/friends/$friendUuid";
 
   // IMAGE OPERATIONS
   /// Get or delete an image
