@@ -55,8 +55,11 @@ class PhotosViewModel extends FutureViewModel<List<PicInfo>> {
     }
 
     return _pictureRepository.getPictures().then((value) {
-      if (value == null) onError(_pictureRepository.errorCode);
-      return [];
+      if (value == null) {
+        onError(_pictureRepository.errorCode);
+        return [];
+      }
+      return value;
     });
   }
 

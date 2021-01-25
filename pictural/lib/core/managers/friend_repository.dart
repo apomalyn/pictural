@@ -26,13 +26,11 @@ class FriendRepository {
     try {
       final res = await _picturalApi.getFriendList();
 
-      if (res.isNotEmpty) {
-        _logger.i("$tag - ${res.length} friends loaded.");
-        _friendsList.clear();
-        _friendsList.addAll(res);
+      _logger.i("$tag - ${res.length} friends loaded.");
+      _friendsList.clear();
+      _friendsList.addAll(res);
 
-        return _friendsList;
-      }
+      return _friendsList;
     } catch (e) {
       _logger.e("$tag - $e");
       if (e is ApiException) {
@@ -41,5 +39,23 @@ class FriendRepository {
       }
     }
     return null;
+  }
+
+  /// Delete the friendship between the current user and the one corresponding to [uuid]
+  Future<bool> deleteFriendship(String uuid) async {
+    _logger.d("$tag - Trying to delete a friendship");
+    try {
+      await _picturalApi.deleteFriend(uuid);
+      await getFriendsList();
+      return true;
+    } catch (e) {
+      _logger.e("$tag - $e");
+      if (e is ApiException) {
+        // TODO add analytics to log error
+        _errorCode = e.errorCode;
+      }
+    }
+
+    return false;
   }
 }

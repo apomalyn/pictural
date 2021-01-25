@@ -24,12 +24,11 @@ class PictureRepository {
     try {
       final images = await _picturalApi.getPictures();
 
-      if (images.isNotEmpty) {
-        // Load the new
-        _pictures.clear();
-        _pictures.addAll(images);
-        _logger.i("$tag - ${_pictures.length} pictures loaded");
-      }
+      // Load the new images.
+      _pictures.clear();
+      _pictures.addAll(images);
+      _logger.i("$tag - ${_pictures.length} pictures loaded");
+
       return _pictures;
     } catch (e) {
       _logger.e("$tag - $e");

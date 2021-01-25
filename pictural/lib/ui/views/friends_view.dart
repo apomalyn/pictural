@@ -26,7 +26,11 @@ class FriendsView extends StatelessWidget {
           child: model.friends.isEmpty
               ? _buildEmptyList(context, AppIntl.of(context).friends_empty,
                   () => model.refresh())
-              : _buildFriendsList(model.friends),
+              : _buildFriendsList(context, model),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {},
+          child: Icon(Icons.group_add_outlined),
         ),
       ),
     );
@@ -60,8 +64,26 @@ class FriendsView extends StatelessWidget {
     );
   }
 
-  Widget _buildFriendsList(List<Friend> friends) => Wrap(
-      alignment: WrapAlignment.start,
-      crossAxisAlignment: WrapCrossAlignment.start,
-      children: friends.map<Widget>((e) => FriendCard(friend: e)).toList());
+  Widget _buildFriendsList(BuildContext context, FriendsViewModel model) =>
+      Wrap(
+          alignment: WrapAlignment.start,
+          crossAxisAlignment: WrapCrossAlignment.start,
+          children: model.friends
+              .map<Widget>((e) => FriendCard(
+                  friend: e,
+                  deleteCallback: () => showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                            title: Text(
+                                AppIntl.of(context).friends_delete(e.name)),
+                            actions: [
+                              FlatButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: Text(AppIntl.of(context).cancel)),
+                              FlatButton(
+                                  onPressed: () => model.deleteFriend(e.uuid),
+                                  child: Text(AppIntl.of(context).confirm)),
+                            ],
+                          ))))
+              .toList());
 }

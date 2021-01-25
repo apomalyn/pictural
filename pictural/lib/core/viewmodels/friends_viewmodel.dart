@@ -26,8 +26,11 @@ class FriendsViewModel extends FutureViewModel<List<Friend>> {
     }
 
     return _friendRepository.getFriendsList().then((value) {
-      if (value == null) onError(_friendRepository.errorCode);
-      return [];
+      if(value == null) {
+        onError(_friendRepository.errorCode);
+        return [];
+      }
+      return value;
     });
   }
 
@@ -47,5 +50,19 @@ class FriendsViewModel extends FutureViewModel<List<Friend>> {
       onError(_friendRepository.errorCode);
     }
     setBusy(false);
+  }
+
+  Future deleteFriend(String uuid) async {
+    _logger.i("User ask to remove a friend from the list");
+    setBusy(true);
+    final res = await _friendRepository.deleteFriendship(uuid);
+
+    setBusy(false);
+    _navigationService.pop();
+    // Suppression failed
+    if(!res) {
+      _logger.e(_friendRepository.errorCode);
+      onError(_friendRepository.errorCode);
+    }
   }
 }

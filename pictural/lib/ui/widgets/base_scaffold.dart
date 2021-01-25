@@ -1,6 +1,5 @@
 // FLUTTER / DART / THIRD-PARTIES
 import 'package:flutter/material.dart';
-import 'package:pictural/generated/l10n.dart';
 import 'package:pictural/ui/utils/app_theme.dart';
 
 import 'menu.dart';
