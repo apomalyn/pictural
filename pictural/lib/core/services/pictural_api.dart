@@ -101,7 +101,7 @@ class PicturalApi {
     final response = await _client.get(Urls.search(partialName));
 
     if (response.statusCode == HttpStatus.ok) {
-      var json = jsonDecode(response.body)["friends"] as List;
+      var json = jsonDecode(response.body)["usersMatch"] as List;
 
       return json.map<Friend>((i) => Friend.fromJson(i)).toList();
     }
