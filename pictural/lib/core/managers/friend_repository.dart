@@ -58,4 +58,23 @@ class FriendRepository {
 
     return false;
   }
+
+  /// Retrieve the list of users that contains [partialName] in their name
+  Future<List<Friend>> searchUsersThatMatch(String partialName) async {
+    _logger.d("$tag - Try to search user that match $partialName");
+    try {
+      final res = await _picturalApi.searchUsers(partialName);
+
+      _logger.i("$tag - ${res.length} users matche $partialName.");
+
+      return res;
+    } catch (e) {
+      _logger.e("$tag - $e");
+      if (e is ApiException) {
+        // TODO add analytics to log error
+        _errorCode = e.errorCode;
+      }
+    }
+    return null;
+  }
 }

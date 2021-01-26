@@ -95,6 +95,20 @@ class PicturalApi {
     }
   }
 
+  /// Search an user with is [partialName]. Return the list of user that match
+  /// the [partialName]
+  Future<List<Friend>> searchUsers(String partialName) async {
+    final response = await _client.get(Urls.search(partialName));
+
+    if (response.statusCode == HttpStatus.ok) {
+      var json = jsonDecode(response.body)["friends"] as List;
+
+      return json.map<Friend>((i) => Friend.fromJson(i)).toList();
+    }
+    // Otherwise
+    throw ApiException(prefix: errorTag, errorCode: response.statusCode);
+  }
+
   /// Get the list of pictures owned/shared with the current user
   Future<List<PicInfo>> getPictures() async {
     final response = await _client.get(Urls.images);

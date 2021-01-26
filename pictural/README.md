@@ -10,7 +10,7 @@ You are here on the UI side of the project.
 ## Requirements
 
 - Flutter: v1.25 or higher (beta channel)
-- Pictural API: 1.1.0 or higher
+- Pictural API: 1.2.0 or higher
 
 ## Run the project
 
