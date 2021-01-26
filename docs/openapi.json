@@ -24,11 +24,6 @@
       "description": "Every interaction with an album"
     }
   ],
-  "servers": [
-    {
-      "url": "/0.1"
-    }
-  ],
   "paths": {
     "/user": {
       "get": {
@@ -305,6 +300,52 @@
           },
           "404": {
             "description": "Friend not found"
+          },
+          "5XX": {
+            "description": "Something went wrong"
+          }
+        }
+      }
+    },
+    "/user/search": {
+      "get": {
+        "summary": "Search an user from his name",
+        "tags": [
+          "user"
+        ],
+        "operationId": "user_search",
+        "parameters": [
+          {
+            "name": "partialName",
+            "in": "query",
+            "description": "Partial name of the user",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users that match the partialName given.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "friends": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Friend"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The partialName parameters is required."
           },
           "5XX": {
             "description": "Something went wrong"

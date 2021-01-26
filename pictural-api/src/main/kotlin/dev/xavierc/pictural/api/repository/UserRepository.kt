@@ -99,7 +99,7 @@ class UserRepository {
         var isFriend = false
 
         transaction {
-            if(Friends.select { Friends.userUuid.eq(userUuid) and Friends.friendUuid.eq(friendUuid) }.count() > 0) {
+            if (Friends.select { Friends.userUuid.eq(userUuid) and Friends.friendUuid.eq(friendUuid) }.count() > 0) {
                 isFriend = true
             }
         }
@@ -148,5 +148,20 @@ class UserRepository {
             return false
         }
         return true
+    }
+
+    /**
+     * Search all the users that match [partialName].
+     */
+    fun searchUsers(partialName: String): List<Friend> {
+        val potentialMatch = mutableListOf<Friend>();
+
+        transaction {
+            Users.slice(Users.uuid, Users.name, Users.pictureUrl).select { Users.name like "%$partialName%" }.forEach {
+                potentialMatch.add(Friend(it[Users.uuid], it[Users.name], it[Users.pictureUrl]))
+            }
+        }
+
+        return potentialMatch.toList()
     }
 }
