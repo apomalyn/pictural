@@ -28,7 +28,7 @@ class FriendsViewModel extends FutureViewModel<List<Friend>> {
     }
 
     return _friendRepository.getFriendsList().then((value) {
-      if(value == null) {
+      if (value == null) {
         onError(_friendRepository.errorCode);
         return [];
       }
@@ -60,11 +60,23 @@ class FriendsViewModel extends FutureViewModel<List<Friend>> {
     final res = await _friendRepository.deleteFriendship(uuid);
 
     setBusy(false);
+    // Close pop up.
     _navigationService.pop();
     // Suppression failed
-    if(!res) {
+    if (!res) {
       _logger.e(_friendRepository.errorCode);
       onError(_friendRepository.errorCode);
     }
+  }
+
+  Future<List<Friend>> search(String partialName) async {
+    _logger.i("User search users that contains $partialName in their name");
+    final res = await _friendRepository.searchUsersThatMatch(partialName);
+
+    if (res == null) {
+      _logger.e(_friendRepository.errorCode);
+      onError(_friendRepository.errorCode);
+    }
+    return res;
   }
 }
