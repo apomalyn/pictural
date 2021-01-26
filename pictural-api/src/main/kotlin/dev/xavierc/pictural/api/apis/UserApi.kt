@@ -22,10 +22,6 @@ import io.ktor.response.respond
 import io.ktor.routing.Route
 
 import dev.xavierc.pictural.api.Paths
-import dev.xavierc.pictural.api.models.FriendsListResponse
-import dev.xavierc.pictural.api.models.UserAddRequest
-import dev.xavierc.pictural.api.models.UserSession
-import dev.xavierc.pictural.api.models.UserUpdateRequest
 import dev.xavierc.pictural.api.repository.UserRepository
 
 
@@ -38,6 +34,7 @@ import org.kodein.di.instance
 import org.kodein.di.ktor.di
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken
 import com.google.gson.Gson
+import dev.xavierc.pictural.api.models.*
 import dev.xavierc.pictural.api.settings
 import io.ktor.client.features.json.*
 import io.ktor.util.*
@@ -51,6 +48,19 @@ fun Route.UserApi() {
     val verifier = GoogleIdTokenVerifier.Builder(ApacheHttpTransport(), GsonFactory())
         .setAudience(listOf(settings.property("auth.oauth.google_oauth2.clientId").getString()))
         .build()
+
+    // Search a user
+    post { _: Paths.UserSearch ->
+        val partialName = call.request.queryParameters["partialName"]
+
+        if(partialName == null) {
+            call.respond(HttpStatusCode.BadRequest)
+        } else {
+            val usersMatch = userRepository.searchUsers(partialName)
+
+            call.respond(HttpStatusCode.OK, SearchResponse(usersMatch))
+        }
+    }
 
     // Get the friends list of the user
     get { _: Paths.UserFriendsGet ->

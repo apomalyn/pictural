@@ -187,4 +187,10 @@ object Paths {
      */
     @KtorExperimentalLocationsAPI
     @Location("/user/logout") class UserLogout()
+
+    /**
+     * Search a user based on a part of his name.
+     */
+    @KtorExperimentalLocationsAPI
+    @Location("/user/search") class UserSearch()
 }

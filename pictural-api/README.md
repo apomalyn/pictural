@@ -1,5 +1,5 @@
 # dev.xavierc.pictural.api - Kotlin Server library for Pictural API
-[![API](https://img.shields.io/badge/API-1.1.1-blue.svg)](https://shields.io/)
+[![API](https://img.shields.io/badge/API-1.2.0-blue.svg)](https://shields.io/)
 
 This API is part of my project for the Shopify Developer intern challenge. This API manage the users, pictures and links between accounts of Pictural.
 
