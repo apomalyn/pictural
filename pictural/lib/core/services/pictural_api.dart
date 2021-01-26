@@ -86,6 +86,16 @@ class PicturalApi {
     throw ApiException(prefix: errorTag, errorCode: response.statusCode);
   }
 
+  /// Add a friend into the list
+  Future addFriend(String uuid) async {
+    final response = await _client.post(Urls.friend(uuid));
+
+    if (response.statusCode != HttpStatus.ok) {
+      throw ApiException(prefix: errorTag, errorCode: response.statusCode);
+    }
+  }
+
+
   /// Remove a friend from the list
   Future deleteFriend(String uuid) async {
     final response = await _client.delete(Urls.friend(uuid));

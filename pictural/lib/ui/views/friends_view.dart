@@ -48,7 +48,7 @@ class FriendsView extends StatelessWidget {
                               title: Text(friend.name),
                               trailing: IconButton(
                                 icon: Icon(Icons.group_add_outlined),
-                                onPressed: () {},
+                                onPressed: () => model.addFriend(friend.uuid),
                               ),
                             ),
                       ),

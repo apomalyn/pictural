@@ -73,12 +73,15 @@ class _SearchBarState<T> extends State<SearchBar> {
               Padding(
                 padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                 child: _searchResult.isNotEmpty
-                    ? ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: _searchResult.length,
-                        padding: EdgeInsets.zero,
-                        itemBuilder: (_, index) =>
-                            widget.listItemBuilder(_, _searchResult[index]))
+                    ? ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 600),
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: _searchResult.length,
+                            padding: EdgeInsets.zero,
+                            itemBuilder: (_, index) => widget.listItemBuilder(
+                                _, _searchResult[index])),
+                      )
                     : Center(
                         child: Text("Sorry we didn't found anything"),
                       ),
