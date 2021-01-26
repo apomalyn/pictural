@@ -36,6 +36,7 @@ class FriendsView extends StatelessWidget {
                 builder: (context) => Dialog(
                       child: SearchBar<Friend>(
                         searchFunction: model.search,
+                        notFoundText: AppIntl.current.friends_not_found,
                         listItemBuilder:
                             (BuildContext context, Friend friend) => ListTile(
                               leading: CircleAvatar(

@@ -35,5 +35,6 @@
     "placeholders": {
       "name": {}
     }
-  }
+  },
+  "friends_not_found": "Sorry we didn't found user corresponding to your search"
 }

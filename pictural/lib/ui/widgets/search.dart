@@ -10,8 +10,10 @@ class SearchBar<T> extends StatefulWidget {
 
   final Function listItemBuilder;
 
+  final String notFoundText;
+
   const SearchBar(
-      {Key key, @required this.searchFunction, @required this.listItemBuilder})
+      {Key key, @required this.searchFunction, @required this.listItemBuilder, @required this.notFoundText})
       : super(key: key);
 
   _SearchBarState createState() => _SearchBarState<T>();
@@ -83,7 +85,7 @@ class _SearchBarState<T> extends State<SearchBar> {
                                 _, _searchResult[index])),
                       )
                     : Center(
-                        child: Text("Sorry we didn't found anything"),
+                        child: Text(widget.notFoundText),
                       ),
               )
           ],
