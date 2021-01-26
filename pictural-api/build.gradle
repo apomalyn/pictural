@@ -1,5 +1,5 @@
 group 'dev.xavierc.pictural'
-version '1.2.0'
+version '1.2.2'
 
 wrapper {
     gradleVersion = '5.4'

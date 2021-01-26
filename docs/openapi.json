@@ -3,7 +3,7 @@
   "info": {
     "title": "Pictural API",
     "description": "This API is part of my project for the Shopify Developer intern challenge. This API manage the users, pictures and links between accounts of Pictural.",
-    "version": "1.1.0",
+    "version": "1.2.2",
     "contact": {
       "email": "chretienxavier42@gmail.com",
       "name": "Xavier Chrétien",
@@ -333,7 +333,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "friends": {
+                    "usersMatch": {
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/Friend"

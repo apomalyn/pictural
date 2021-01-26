@@ -41,6 +41,24 @@ class FriendRepository {
     return null;
   }
 
+  /// Create a friendship between the current user and the one corresponding to [uuid]
+  Future<bool> addFriend(String uuid) async {
+    _logger.d("$tag - Trying to add a friend");
+    try {
+      await _picturalApi.addFriend(uuid);
+      await getFriendsList();
+      return true;
+    } catch (e) {
+      _logger.e("$tag - $e");
+      if (e is ApiException) {
+        // TODO add analytics to log error
+        _errorCode = e.errorCode;
+      }
+    }
+
+    return false;
+  }
+
   /// Delete the friendship between the current user and the one corresponding to [uuid]
   Future<bool> deleteFriendship(String uuid) async {
     _logger.d("$tag - Trying to delete a friendship");
@@ -57,5 +75,24 @@ class FriendRepository {
     }
 
     return false;
+  }
+
+  /// Retrieve the list of users that contains [partialName] in their name
+  Future<List<Friend>> searchUsersThatMatch(String partialName) async {
+    _logger.d("$tag - Try to search user that match $partialName");
+    try {
+      final res = await _picturalApi.searchUsers(partialName);
+
+      _logger.i("$tag - ${res.length} users matche $partialName.");
+
+      return res;
+    } catch (e) {
+      _logger.e("$tag - $e");
+      if (e is ApiException) {
+        // TODO add analytics to log error
+        _errorCode = e.errorCode;
+      }
+    }
+    return null;
   }
 }

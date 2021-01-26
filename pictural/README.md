@@ -1,5 +1,5 @@
 # Pictural
-[![ui](https://img.shields.io/badge/UI-0.1.2-blue.svg)](https://shields.io/)
+[![ui](https://img.shields.io/badge/UI-0.2.0-blue.svg)](https://shields.io/)
 
 Pictural is an image repository to upload and share your pictures with your friends and loved ones.
 
@@ -10,7 +10,7 @@ You are here on the UI side of the project.
 ## Requirements
 
 - Flutter: v1.25 or higher (beta channel)
-- Pictural API: 1.1.0 or higher
+- Pictural API: 1.2.0 or higher
 
 ## Run the project
 

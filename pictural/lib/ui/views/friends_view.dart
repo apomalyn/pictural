@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:pictural/core/models/friend.dart';
 import 'package:pictural/core/viewmodels/friends_viewmodel.dart';
 import 'package:pictural/generated/l10n.dart';
 import 'package:pictural/ui/utils/app_theme.dart';
 import 'package:pictural/ui/widgets/base_scaffold.dart';
 import 'package:pictural/ui/widgets/friend_card.dart';
+import 'package:pictural/ui/widgets/search.dart';
 import 'package:stacked/stacked.dart';
 
 class FriendsView extends StatelessWidget {
@@ -28,7 +30,31 @@ class FriendsView extends StatelessWidget {
               : _buildFriendsList(context, model),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            showDialog(
+                context: context,
+                builder: (context) => Dialog(
+                      child: SearchBar<Friend>(
+                        searchFunction: model.search,
+                        notFoundText: AppIntl.current.friends_not_found,
+                        listItemBuilder:
+                            (BuildContext context, Friend friend) => ListTile(
+                              leading: CircleAvatar(
+                                  radius: 22,
+                                  backgroundImage: friend.pictureUrl == null
+                                      ? Icon(Icons.account_circle_outlined,
+                                      size: 22)
+                                      : NetworkImage(friend.pictureUrl),
+                                  backgroundColor: AppTheme.yellowPic),
+                              title: Text(friend.name),
+                              trailing: IconButton(
+                                icon: Icon(Icons.group_add_outlined),
+                                onPressed: () => model.addFriend(friend.uuid),
+                              ),
+                            ),
+                      ),
+                    ));
+          },
           child: Icon(Icons.group_add_outlined),
         ),
       ),

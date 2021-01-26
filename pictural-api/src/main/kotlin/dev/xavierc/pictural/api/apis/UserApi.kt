@@ -50,7 +50,7 @@ fun Route.UserApi() {
         .build()
 
     // Search a user
-    post { _: Paths.UserSearch ->
+    get { _: Paths.UserSearch ->
         val partialName = call.request.queryParameters["partialName"]
 
         if(partialName == null) {

@@ -16,4 +16,16 @@ class Friend {
 
   Map<String, dynamic> toJson() =>
       {'uuid': uuid, 'name': name, 'pictureUrl': pictureUrl};
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Friend &&
+          runtimeType == other.runtimeType &&
+          uuid == other.uuid &&
+          name == other.name &&
+          pictureUrl == other.pictureUrl;
+
+  @override
+  int get hashCode => uuid.hashCode ^ name.hashCode ^ pictureUrl.hashCode;
 }

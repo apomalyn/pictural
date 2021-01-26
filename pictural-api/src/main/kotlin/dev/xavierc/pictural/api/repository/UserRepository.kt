@@ -2,6 +2,7 @@ package dev.xavierc.pictural.api.repository
 
 import dev.xavierc.pictural.api.models.Friend
 import dev.xavierc.pictural.api.models.User
+import dev.xavierc.pictural.api.utils.FriendshipAlreadyExistException
 import dev.xavierc.pictural.api.utils.UuidDontExistException
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -116,6 +117,9 @@ class UserRepository {
                 if (Users.select(Users.uuid.eq(userUuid) or Users.uuid.eq(friendUuid)).count() != 2) {
                     throw UuidDontExistException()
                 }
+                if (Friends.select(Friends.userUuid.eq(userUuid) and Friends.friendUuid.eq(friendUuid)).count() != 0) {
+                    throw  FriendshipAlreadyExistException()
+                }
                 Friends.insert {
                     it[Friends.userUuid] = userUuid
                     it[Friends.friendUuid] = friendUuid
@@ -128,8 +132,10 @@ class UserRepository {
                 }
             }
         } catch (e: UuidDontExistException) {
-            // TODO improve login
             print("userUuid or friendUuid not found inside the database")
+            return false
+        } catch (e: FriendshipAlreadyExistException) {
+            print("Already friends")
             return false
         }
         return true

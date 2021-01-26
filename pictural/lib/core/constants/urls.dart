@@ -17,6 +17,9 @@ class Urls {
   /// Add or remove a friend of the list
   static String friend(friendUuid) => "$picturalApi/user/friends/$friendUuid";
 
+  /// Search a user that match [partialName]
+  static String search(partialName) => "$picturalApi/user/search?partialName=$partialName";
+
   // IMAGE OPERATIONS
   /// Get or delete an image
   static String image(imageUuid) => "$picturalApi/image/$imageUuid";
