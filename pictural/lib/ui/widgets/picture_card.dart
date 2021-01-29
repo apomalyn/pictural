@@ -7,13 +7,10 @@ class PictureCard extends StatefulWidget {
 
   final VoidCallback onTap;
 
-  final VoidCallback onLongPress;
-
   const PictureCard(
       {Key key,
       @required this.pictureInfo,
-      @required this.onTap,
-      @required this.onLongPress})
+      @required this.onTap})
       : super(key: key);
 
   @override
@@ -29,15 +26,12 @@ class _PictureCardState extends State<PictureCard> {
             minWidth: 150, minHeight: 150, maxHeight: 300, maxWidth: 300),
         child: InkWell(
             onTap: widget.onTap,
-            onLongPress: () {
-              setState(() {
-                _isSelected = !_isSelected;
-                widget.onLongPress();
-              });
-            },
-            child: Stack(
-              alignment: Alignment.center,
-              children: [Image.network(Urls.image(widget.pictureInfo.uuid))],
+            child: Hero(
+              tag: widget.pictureInfo.uuid,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [Image.network(Urls.image(widget.pictureInfo.uuid))],
+              ),
             )),
       );
 }

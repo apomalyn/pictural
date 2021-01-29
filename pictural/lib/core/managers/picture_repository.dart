@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:logger/logger.dart';
+import 'package:pictural/core/models/friend.dart';
 import 'package:pictural/core/models/pic_info.dart';
 import 'package:pictural/core/services/pictural_api.dart';
 import 'package:pictural/core/utils/api_exception.dart';
@@ -51,5 +52,21 @@ class PictureRepository {
     }
 
     return isSuccess;
+  }
+
+  /// Share [picture] with [friend].
+  Future<bool> sharePictureWith(PicInfo picture, Friend friend) async {
+    try {
+      await _picturalApi.sharePictureWith(picture.uuid, friend);
+    } catch (e) {
+      _logger.e("$tag - $e");
+      if(e is ApiException) {
+        // TODO add analytics to log error
+        _errorCode = e.errorCode;
+      }
+      return false;
+    }
+    await getPictures();
+    return true;
   }
 }

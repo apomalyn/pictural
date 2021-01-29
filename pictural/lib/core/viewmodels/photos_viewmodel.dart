@@ -98,4 +98,9 @@ class PhotosViewModel extends FutureViewModel<List<PicInfo>> {
     }
     setBusy(false);
   }
+
+  /// Open the BigPicture view.
+  void goToBigPicture(PicInfo picInfo) {
+    _navigationService.pushNamed(Paths.bigPhoto, arguments: picInfo);
+  }
 }
