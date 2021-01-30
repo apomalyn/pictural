@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pictural/core/constants/paths.dart';
+import 'package:pictural/ui/views/big_photo_view.dart';
 import 'package:pictural/ui/views/friends_view.dart';
 import 'package:pictural/ui/views/login_view.dart';
 import 'package:pictural/ui/views/not_found_view.dart';
@@ -30,6 +31,10 @@ class AppRouter {
         return PageRouteBuilder(
             settings: RouteSettings(name: routeSettings.name),
             pageBuilder: (_, __, ___) => PhotosView());
+      case Paths.bigPhoto:
+        return PageRouteBuilder(
+            settings: RouteSettings(name: routeSettings.name, arguments: routeSettings.arguments),
+            pageBuilder: (_, __, ___) => BigPhoto());
       default:
         return PageRouteBuilder(
             settings: RouteSettings(name: routeSettings.name),

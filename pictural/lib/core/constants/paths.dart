@@ -6,4 +6,5 @@ class Paths {
   static const String albums = "/albums";
   static const String profile = "/profile";
   static const String photos = "/photos";
+  static const String bigPhoto = "/photo";
 }

@@ -35,17 +35,17 @@ class PhotosView extends StatelessWidget {
               (model.pictures.isEmpty)
                   ? _buildEmptyList(context, AppIntl.of(context).photos_empty,
                       () => model.refresh())
-                  : _buildPicturesList(model.pictures),
+                  : _buildPicturesList(model.pictures, model),
               (model.userPictures.isEmpty)
                   ? _buildEmptyList(context, AppIntl.of(context).photos_empty,
                       () => model.refresh())
-                  : _buildPicturesList(model.userPictures),
+                  : _buildPicturesList(model.userPictures, model),
               (model.picturesSharedWithUser.isEmpty)
                   ? _buildEmptyList(
                       context,
                       AppIntl.of(context).photos_shared_empty,
                       () => model.refresh())
-                  : _buildPicturesList(model.picturesSharedWithUser)
+                  : _buildPicturesList(model.picturesSharedWithUser, model)
             ]),
           ),
           floatingActionButton: FloatingActionButton(
@@ -86,13 +86,13 @@ class PhotosView extends StatelessWidget {
     );
   }
 
-  Widget _buildPicturesList(List<PicInfo> pictures) => Wrap(
+  Widget _buildPicturesList(List<PicInfo> pictures,PhotosViewModel model) => Wrap(
         crossAxisAlignment: WrapCrossAlignment.center,
         runSpacing: 4.0,
         spacing: 4.0,
         children: pictures
             .map<Widget>((e) =>
-                PictureCard(pictureInfo: e, onTap: null, onLongPress: null))
+                PictureCard(pictureInfo: e, onTap: () => model.goToBigPicture(e)))
             .toList(),
       );
 }

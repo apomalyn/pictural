@@ -28,6 +28,10 @@
   "photos_tab_mine": "My pictures",
   "photos_tab_shared": "Shared with me",
 
+  "big_picture_share_with_title": "Share this picture with:",
+  "big_picture_share_action_tooltip": "Share this picture with a friend.",
+  "big_picture_share_action_disabled_tooltip": "This picture is already shared with all your friends.",
+
   "friends_empty": "You don't have anyone on your friends list yet.",
   "friends_tooltip_refresh": "Refresh your list of friends.",
   "friends_delete": "Do you want to remove {name} from your friends?",

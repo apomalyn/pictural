@@ -15,7 +15,7 @@ class StartupViewModel extends BaseViewModel {
     await Future.delayed(Duration(seconds: 1));
 
     if (loggingSuccessful) {
-      _navigationService.pushNamed(Paths.friends);
+      _navigationService.pushNamed(Paths.photos);
     } else {
       print("Silent sign in failed, redirect to login");
       _navigationService.pushNamed(Paths.login);
