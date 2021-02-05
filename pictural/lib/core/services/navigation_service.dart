@@ -15,6 +15,11 @@ class NavigationService {
     return false;
   }
 
+  /// Pop the route until [routeName] is found.
+  popUntil(String routeName) {
+    _navigatorKey.currentState.popUntil((route) => route.settings.name == routeName);
+  }
+
   /// Push a named route ([routeName] onto the navigator.
   Future<dynamic> pushNamed(String routeName, {dynamic arguments}) {
     return _navigatorKey.currentState.pushNamed(routeName, arguments: arguments);

@@ -31,6 +31,13 @@
   "big_picture_share_with_title": "Share this picture with:",
   "big_picture_share_action_tooltip": "Share this picture with a friend.",
   "big_picture_share_action_disabled_tooltip": "This picture is already shared with all your friends.",
+  "big_picture_display_friends_list": "See all the friends that can see this picture.",
+  "big_picture_remove_access": "Remove the access of {name} to this picture?",
+  "@big_picture_remove_access": {
+    "placeholders": {
+      "name": {}
+    }
+  },
 
   "friends_empty": "You don't have anyone on your friends list yet.",
   "friends_tooltip_refresh": "Refresh your list of friends.",

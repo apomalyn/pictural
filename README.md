@@ -7,7 +7,7 @@ This project was built to satisfy the shopify Challenge for Summer 2021.
 
 ## Details
 
-[![API](https://img.shields.io/badge/API-1.2.3-blue.svg)](https://shields.io/) [![ui](https://img.shields.io/badge/UI-0.3.0-blue.svg)](https://shields.io/)
+[![API](https://img.shields.io/badge/API-1.2.3-blue.svg)](https://shields.io/) [![ui](https://img.shields.io/badge/UI-0.4.0-blue.svg)](https://shields.io/)
 
 The project is divided in two parts: the `pictural api` and the `ui`.
 
@@ -53,8 +53,8 @@ the progression of features.
 | User sign out                 	| Allow a user to sign out.                                                                                    	| [![API](https://img.shields.io/badge/API-Done-green.svg)](https://shields.io/) [![ui](https://img.shields.io/badge/UI-No-red.svg)](https://shields.io/)               |
 | Upload an image               	| Allow a user to upload an image.                                                                             	| [![API](https://img.shields.io/badge/API-Done-green.svg)](https://shields.io/) [![ui](https://img.shields.io/badge/UI-Done-green.svg)](https://shields.io/)           |
 | Share an image                	| Allow a user to share an image with other user of the platform.                                              	| [![API](https://img.shields.io/badge/API-Done-green.svg)](https://shields.io/) [![ui](https://img.shields.io/badge/UI-Done-green.svg)](https://shields.io/)               |
-| Remove access of an image     	| Allow a user to remove the access of a user for one image.                                                   	| [![API](https://img.shields.io/badge/API-Done-green.svg)](https://shields.io/) [![ui](https://img.shields.io/badge/UI-In%20Progress-orange.svg)](https://shields.io/)               |
-| Delete an image               	| Allow a user to delete (definitively) an image.                                                              	| [![API](https://img.shields.io/badge/API-Done-green.svg)](https://shields.io/) [![ui](https://img.shields.io/badge/UI-No-red.svg)](https://shields.io/)               |
+| Remove access of an image     	| Allow a user to remove the access of a user for one image.                                                   	| [![API](https://img.shields.io/badge/API-Done-green.svg)](https://shields.io/) [![ui](https://img.shields.io/badge/UI-Done-green.svg)](https://shields.io/)               |
+| Delete an image               	| Allow a user to delete (definitively) an image.                                                              	| [![API](https://img.shields.io/badge/API-Done-green.svg)](https://shields.io/) [![ui](https://img.shields.io/badge/UI-In%20Progress-orange.svg)](https://shields.io/)               |
 | Retrieve images               	| Allow a user to get all the images he owns or that is shared with him..                                      	| [![API](https://img.shields.io/badge/API-Done-green.svg)](https://shields.io/) [![ui](https://img.shields.io/badge/UI-Done-green.svg)](https://shields.io/) |
 | Create an album               	| Allow a user to create an album shared with other users and that contains one or multiples images.           	| [![API](https://img.shields.io/badge/API-Done-green.svg)](https://shields.io/) [![ui](https://img.shields.io/badge/UI-No-red.svg)](https://shields.io/)               |
 | Manage an album               	| Allow a user to manage an album, changes is title, add/remove images and share/remove access to other users. 	| [![API](https://img.shields.io/badge/API-Done-green.svg)](https://shields.io/) [![ui](https://img.shields.io/badge/UI-No-red.svg)](https://shields.io/)               |

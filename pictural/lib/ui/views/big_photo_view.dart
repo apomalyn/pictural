@@ -42,8 +42,17 @@ class _BigPhotoState extends State<BigPhoto> {
                         : () {
                             showDialog(
                                 context: context,
-                                builder: (context) =>
-                                    _buildShareDialog(context, model));
+                                builder: (context) => _buildFriendsListDialog(
+                                    model, model.friendListAdjusted,
+                                    title: Text(
+                                        AppIntl.of(context)
+                                            .big_picture_share_with_title,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline5),
+                                    onTap: (index) => model.sharePictureWith(
+                                        model.friendListAdjusted[index]),
+                                    trailing: Icon(Icons.person_add_outlined)));
                           }),
             ],
           ),
@@ -62,21 +71,22 @@ class _BigPhotoState extends State<BigPhoto> {
                   // alignment: Alignment.bottomRight,
                   bottom: 20,
                   right: 20,
-                  child: _buildAuthorizedUserBubbles(model.picture.authorized)),
+                  child: _buildAuthorizedUserBubbles(model)),
             ],
           ),
         ),
       );
 
   /// Build the "already shared with" bubble
-  Widget _buildAuthorizedUserBubbles(List<Friend> authorized) {
+  Widget _buildAuthorizedUserBubbles(BigPictureViewModel model) {
     List<Widget> bubbles = [];
 
     // Add the 4th first friends bubbles
-    for (int i = 0; i < min(4, authorized.length); i++) {
+    for (int i = 0; i < min(4, model.picture.authorized.length); i++) {
       bubbles.add(Positioned(
-          right: (min(4, authorized.length) - i) * (_bubbleSize * 0.90),
-          child: authorized[i].pictureUrl == null
+          right: (min(4, model.picture.authorized.length) - i) *
+              (_bubbleSize * 0.90),
+          child: model.picture.authorized[i].pictureUrl == null
               ? ClipRRect(
                   borderRadius: BorderRadius.circular(_bubbleSize),
                   child: Icon(Icons.account_circle_outlined,
@@ -84,11 +94,12 @@ class _BigPhotoState extends State<BigPhoto> {
                 )
               : CircleAvatar(
                   radius: _bubbleSize,
-                  backgroundImage: NetworkImage(authorized[i].pictureUrl),
+                  backgroundImage:
+                      NetworkImage(model.picture.authorized[i].pictureUrl),
                   backgroundColor: AppTheme.yellowPic)));
     }
 
-    if (authorized.length > 4) {
+    if (model.picture.authorized.length > 4) {
       // Add +n bubble
       bubbles.add(Positioned(
           right: 0,
@@ -99,7 +110,7 @@ class _BigPhotoState extends State<BigPhoto> {
                 color: Colors.grey.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(_bubbleSize)),
             child: Center(
-                child: Text("+${authorized.length - 4}",
+                child: Text("+${model.picture.authorized.length - 4}",
                     style: AppTheme.lightTheme.textTheme.headline2
                         .copyWith(color: Colors.black))),
           )));
@@ -107,15 +118,40 @@ class _BigPhotoState extends State<BigPhoto> {
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: SizedBox(
-        width: 200,
-        height: _bubbleSize * 2,
-        child: Stack(fit: StackFit.loose, children: bubbles),
+      child: InkWell(
+        onTap: () => showDialog(
+            context: context,
+            builder: (context) =>
+                _buildFriendsListDialog(model, model.picture.authorized,
+                    onTap: (index) => showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                              title: Text(AppIntl.of(context)
+                                  .big_picture_remove_access(
+                                      model.picture.authorized[index].name)),
+                              actions: [
+                                TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(),
+                                    child: Text(AppIntl.of(context).cancel)),
+                                TextButton(
+                                    onPressed: () => model.removeAccessOf(
+                                        model.picture.authorized[index]),
+                                    child: Text(AppIntl.of(context).confirm))
+                              ],
+                            )),
+                    trailing: Icon(Icons.person_remove_outlined))),
+        child: ConstrainedBox(
+          constraints:
+              BoxConstraints(maxHeight: _bubbleSize * 2, maxWidth: 200),
+          child: Stack(fit: StackFit.loose, children: bubbles),
+        ),
       ),
     );
   }
 
-  Widget _buildShareDialog(BuildContext context, BigPictureViewModel model) =>
+  Widget _buildFriendsListDialog(BigPictureViewModel model, List<Friend> list,
+          {Widget title, Function onTap, Widget trailing}) =>
       Dialog(
         child: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -127,36 +163,30 @@ class _BigPhotoState extends State<BigPhoto> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(AppIntl.of(context).big_picture_share_with_title,
-                    style: Theme.of(context).textTheme.headline5),
+                if (title != null) title,
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0),
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 600),
                     child: ListView.builder(
                         shrinkWrap: true,
-                        itemCount: model.friendListAdjusted.length,
+                        itemCount: list.length,
                         padding: EdgeInsets.zero,
                         itemBuilder: (context, index) => ListTile(
-                              onTap: () => model.sharePictureWith(
-                                  model.friendListAdjusted[index]),
+                              onTap: onTap != null ? () => onTap(index) : null,
                               leading: CircleAvatar(
                                   radius: 22,
-                                  backgroundImage: model
-                                              .friendListAdjusted[index]
-                                              .pictureUrl ==
+                                  backgroundImage: list[index].pictureUrl ==
                                           null
                                       ? Icon(Icons.account_circle_outlined,
                                           size: 22)
-                                      : NetworkImage(model
-                                          .friendListAdjusted[index]
-                                          .pictureUrl),
+                                      : NetworkImage(list[index].pictureUrl),
                                   backgroundColor: AppTheme.yellowPic),
-                              title: Text(model.friendListAdjusted[index].name),
-                              trailing: Icon(Icons.person_add_outlined),
+                              title: Text(list[index].name),
+                              trailing: trailing,
                             )),
                   ),
-                ),
+                )
               ],
             ),
           ),

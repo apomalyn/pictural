@@ -69,4 +69,20 @@ class PictureRepository {
     await getPictures();
     return true;
   }
+
+  /// Remove [friend] access to [picture].
+  Future<bool> removeAccessOf(PicInfo picture, Friend friend) async {
+    try {
+      await _picturalApi.removePictureAccess(picture.uuid, friend);
+    } catch (e) {
+      _logger.e("$tag - $e");
+      if(e is ApiException) {
+        // TODO add analytics to log error
+        _errorCode = e.errorCode;
+      }
+      return false;
+    }
+    await getPictures();
+    return true;
+  }
 }
