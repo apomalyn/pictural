@@ -121,9 +121,10 @@ class _BigPhotoState extends State<BigPhoto> {
       child: InkWell(
         onTap: () => showDialog(
             context: context,
-            builder: (context) =>
-                _buildFriendsListDialog(model, model.picture.authorized,
-                    onTap: (index) => showDialog(
+            builder: (context) => _buildFriendsListDialog(
+                model, model.picture.authorized,
+                onTap: model.isOwner
+                    ? (index) => showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
                               title: Text(AppIntl.of(context)
@@ -139,8 +140,10 @@ class _BigPhotoState extends State<BigPhoto> {
                                         model.picture.authorized[index]),
                                     child: Text(AppIntl.of(context).confirm))
                               ],
-                            )),
-                    trailing: Icon(Icons.person_remove_outlined))),
+                            ))
+                    : null,
+                trailing:
+                    model.isOwner ? Icon(Icons.person_remove_outlined) : null)),
         child: ConstrainedBox(
           constraints:
               BoxConstraints(maxHeight: _bubbleSize * 2, maxWidth: 200),
