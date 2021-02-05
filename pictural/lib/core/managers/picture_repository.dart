@@ -85,4 +85,21 @@ class PictureRepository {
     await getPictures();
     return true;
   }
+
+  /// Delete permanently [picture]
+  Future<bool> deletePicture(PicInfo picture) async {
+    try {
+      await _picturalApi.deletePicture(picture.uuid);
+    } catch (e) {
+      _logger.e("$tag - $e");
+      if(e is ApiException) {
+        // TODO add analytics to log error
+        _errorCode = e.errorCode;
+      }
+      return false;
+    }
+    // Refresh the pictures list.
+    await getPictures();
+    return true;
+  }
 }

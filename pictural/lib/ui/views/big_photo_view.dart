@@ -29,32 +29,56 @@ class _BigPhotoState extends State<BigPhoto> {
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
-            actions: [
-              if (model.isOwner)
-                IconButton(
-                    icon: Icon(Icons.share),
-                    tooltip: model.friendListAdjusted.isEmpty
-                        ? AppIntl.of(context)
-                            .big_picture_share_action_disabled_tooltip
-                        : AppIntl.of(context).big_picture_share_action_tooltip,
-                    onPressed: model.friendListAdjusted.isEmpty
-                        ? null
-                        : () {
-                            showDialog(
-                                context: context,
-                                builder: (context) => _buildFriendsListDialog(
-                                    model, model.friendListAdjusted,
-                                    title: Text(
-                                        AppIntl.of(context)
-                                            .big_picture_share_with_title,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline5),
-                                    onTap: (index) => model.sharePictureWith(
-                                        model.friendListAdjusted[index]),
-                                    trailing: Icon(Icons.person_add_outlined)));
-                          }),
-            ],
+            actions: model.isOwner
+                ? [
+                    IconButton(
+                      icon: Icon(Icons.delete_outlined),
+                      tooltip: AppIntl.of(context).big_picture_delete_tooltip,
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text(AppIntl.of(context).big_picture_delete),
+                              actions: [
+                                TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(),
+                                    child: Text(AppIntl.of(context).cancel)),
+                                TextButton(
+                                    onPressed: () => model.deletePicture(),
+                                    child: Text(AppIntl.of(context).confirm))
+                              ],
+                            ));
+                      },
+                    ),
+                    IconButton(
+                        icon: Icon(Icons.share),
+                        tooltip: model.friendListAdjusted.isEmpty
+                            ? AppIntl.of(context)
+                                .big_picture_share_action_disabled_tooltip
+                            : AppIntl.of(context)
+                                .big_picture_share_action_tooltip,
+                        onPressed: model.friendListAdjusted.isEmpty
+                            ? null
+                            : () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => _buildFriendsListDialog(
+                                        model, model.friendListAdjusted,
+                                        title: Text(
+                                            AppIntl.of(context)
+                                                .big_picture_share_with_title,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headline5),
+                                        onTap: (index) =>
+                                            model.sharePictureWith(model
+                                                .friendListAdjusted[index]),
+                                        trailing:
+                                            Icon(Icons.person_add_outlined)));
+                              })
+                  ]
+                : [],
           ),
           body: Stack(
             alignment: Alignment.center,
