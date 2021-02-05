@@ -38,6 +38,8 @@
       "name": {}
     }
   },
+  "big_picture_delete": "Do you really want to delete permanently this picture?",
+  "big_picture_delete_tooltip": "Delete permanently this picture",
 
   "friends_empty": "You don't have anyone on your friends list yet.",
   "friends_tooltip_refresh": "Refresh your list of friends.",

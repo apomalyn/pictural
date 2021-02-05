@@ -114,7 +114,11 @@ fun Route.ImageApi(imageDir: File) {
                 }
                 else -> {
                     imageRepository.deleteImageInfo(request.imageUuid)
-                    // TODO Delete file
+                    val file = File(imageDir, "${imageInfo.uuid}.${imageInfo.extensionType}")
+
+                    if(file.exists()) {
+                        file.delete();
+                    }
                     call.respond(HttpStatusCode.OK)
                 }
             }

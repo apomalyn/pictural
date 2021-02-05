@@ -1,5 +1,5 @@
 # Pictural
-[![ui](https://img.shields.io/badge/UI-0.4.0-blue.svg)](https://shields.io/)
+[![ui](https://img.shields.io/badge/UI-0.5.0-blue.svg)](https://shields.io/)
 
 Pictural is an image repository to upload and share your pictures with your friends and loved ones.
 

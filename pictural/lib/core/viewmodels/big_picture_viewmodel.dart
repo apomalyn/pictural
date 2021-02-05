@@ -99,4 +99,21 @@ class BigPictureViewModel extends FutureViewModel {
 
     setBusy(false);
   }
+
+  /// Delete permanently the picture
+  Future deletePicture() async {
+    _logger.i("User asked to delete ${picture.uuid} picture");
+    setBusy(true);
+
+    final success = await _pictureRepository.deletePicture(picture);
+
+    if(success) {
+      _navigationService.popUntil(Paths.photos);
+      _navigationService.pushReplacementNamed(Paths.photos);
+    } else {
+      onError(_pictureRepository.errorCode);
+    }
+
+    setBusy(false);
+  }
 }
