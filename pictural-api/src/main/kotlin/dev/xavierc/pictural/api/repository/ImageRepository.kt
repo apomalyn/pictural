@@ -3,6 +3,7 @@ package dev.xavierc.pictural.api.repository
 import dev.xavierc.pictural.api.models.Friend
 import dev.xavierc.pictural.api.models.ImageInfo
 import dev.xavierc.pictural.api.repository.ImagesInfo.references
+import dev.xavierc.pictural.api.utils.AccessAlreadyGrantedException
 import dev.xavierc.pictural.api.utils.UuidDontExistException
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -49,7 +50,7 @@ class ImageRepository {
 
             if (imageInfoResult != null) {
                 val authorizedUsers = ImagesAuthorizedUsers.rightJoin(Users).slice(Users.uuid, Users.name, Users.pictureUrl)
-                    .select { ImagesAuthorizedUsers.imageUuid.eq(imageUuid) and Users.uuid.eq(ImagesAuthorizedUsers.userUuid)}
+                    .select { ImagesAuthorizedUsers.imageUuid.eq(imageUuid) and Users.uuid.eq(ImagesAuthorizedUsers.userUuid) }
                     .mapIndexed { _, it -> Friend(it[Users.uuid], it[Users.name], it[Users.pictureUrl]) }
 
                 imageInfo = ImageInfo(
@@ -104,6 +105,12 @@ class ImageRepository {
                 // Check if the image exist
                 ImagesInfo.select { ImagesInfo.uuid eq imageUuid }.singleOrNull() ?: throw UuidDontExistException()
 
+                // Check if the image is already shared/owned with/by the user
+                if (ImagesAuthorizedUsers.select { ImagesAuthorizedUsers.userUuid eq userUuid }.count() > 0 ||
+                    ImagesInfo.select { ImagesInfo.uuid.eq(imageUuid) and ImagesInfo.ownerUuid.eq(userUuid) }.count() > 0) {
+                    throw AccessAlreadyGrantedException();
+                }
+
                 // Share the image
                 ImagesAuthorizedUsers.insert {
                     it[ImagesAuthorizedUsers.imageUuid] = imageUuid
@@ -112,6 +119,8 @@ class ImageRepository {
             }
         } catch (e: UuidDontExistException) {
             shared = false
+        } catch (e: AccessAlreadyGrantedException) {
+            shared = true
         } catch (e: Exception) {
             // Something wrong happened
             shared = false

@@ -1,5 +1,6 @@
 import 'package:logger/logger.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:pictural/core/constants/paths.dart';
 import 'package:pictural/core/managers/friend_repository.dart';
 import 'package:pictural/core/managers/picture_repository.dart';
 import 'package:pictural/core/managers/user_repository.dart';
@@ -71,6 +72,27 @@ class BigPictureViewModel extends FutureViewModel {
       // Refresh list of friends
       await futureToRun();
       _navigationService.pop();
+    } else {
+      onError(_pictureRepository.errorCode);
+    }
+
+    setBusy(false);
+  }
+
+  /// Remove [friend] access to the picture
+  Future removeAccessOf(Friend friend) async {
+    _logger.i("User asked to remove ${friend.uuid} access to ${picture.uuid} image.");
+    setBusy(true);
+
+    final success = await _pictureRepository.removeAccessOf(picture, friend);
+
+    if(success) {
+      var index = _pictureRepository.pictures
+          .indexWhere((element) => element.uuid == picture.uuid);
+      picture = _pictureRepository.pictures[index];
+      // Refresh list of friends
+      await futureToRun();
+      _navigationService.popUntil(Paths.bigPhoto);
     } else {
       onError(_pictureRepository.errorCode);
     }

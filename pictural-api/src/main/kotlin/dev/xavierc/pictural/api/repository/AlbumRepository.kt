@@ -2,6 +2,7 @@ package dev.xavierc.pictural.api.repository
 
 import dev.xavierc.pictural.api.models.Album
 import dev.xavierc.pictural.api.models.Friend
+import dev.xavierc.pictural.api.utils.UuidDontExistException
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.lang.Exception
@@ -146,7 +147,28 @@ class AlbumRepository {
     fun shareWith(uuid: UUID, authorizedUsers: List<String>): Boolean {
         try {
             transaction {
-                AlbumsAuthorizedUsers.batchInsert(data = authorizedUsers) {
+                // Check if the album exists
+                val album = Albums.select { Albums.uuid eq uuid }.singleOrNull() ?: throw UuidDontExistException();
+
+                val alreadyAuthorized: List<String> =
+                    AlbumsAuthorizedUsers.select { AlbumsAuthorizedUsers.albumUuid.eq(uuid) and AlbumsAuthorizedUsers.userUuid.eq(Users.uuid) }
+                        .mapIndexed { _, it -> it[AlbumsAuthorizedUsers.userUuid] }
+
+                val usersToAdd = mutableListOf<String>();
+
+                // Remove every users who already have access to the album
+                authorizedUsers.forEach {
+                    if(!alreadyAuthorized.contains(it)) {
+                        usersToAdd.add(it)
+                    }
+                }
+
+                // Remove the owner of the album
+                if(usersToAdd.contains(album[Albums.ownerUuid])) {
+                    usersToAdd.remove(album[Albums.ownerUuid])
+                }
+
+                AlbumsAuthorizedUsers.batchInsert(data = usersToAdd) {
                     this[AlbumsAuthorizedUsers.albumUuid] = uuid
                     this[AlbumsAuthorizedUsers.userUuid] = it
                 }
