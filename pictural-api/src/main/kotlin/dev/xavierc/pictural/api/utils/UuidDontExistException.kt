@@ -1,8 +1,6 @@
 package dev.xavierc.pictural.api.utils
 
-import java.lang.Exception
-
 /**
- * Exception throw when the use
+ * Exception throw when an UUID doesn't exists.
  */
 class UuidDontExistException: Exception()
